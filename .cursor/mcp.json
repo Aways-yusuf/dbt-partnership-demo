@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "dbt": {
+      "command": "uvx",
+      "args": ["dbt-mcp"],
+      "env": {
+        "DBT_PROJECT_DIR": "/Users/gaurav/Downloads/DBT/DBT-MCP/dbt-partnership-demo/",
+        "DBT_PATH": "/Users/gaurav/.local/bin/dbt",
+        "DBT_HOST": "https://yh400.us1.dbt.com",
+        "DBT_TOKEN": "dbtu_7epH0swFEbh76XwGUnwKl1-Dbh34o4BtXl6dVQN6Mz5FBdthZU",
+        "SSL_CERT_FILE": "/etc/ssl/cert.pem",
+        "REQUESTS_CA_BUNDLE": "/etc/ssl/cert.pem"
+      }
+    }
+  }
+}
