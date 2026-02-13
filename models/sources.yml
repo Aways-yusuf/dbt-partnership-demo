@@ -1,0 +1,49 @@
+# Source: WideWorldImporters OLTP replicated to BigQuery (align identifiers to your replication)
+
+version: 2
+sources:
+  - name: wwi_oltp
+    description: WideWorldImporters transactional database
+    database: "{{ env_var('BQ_PROJECT', 'your-gcp-project') }}"
+    schema: "{{ var('wwi_source_dataset') }}"
+    tables:
+      - name: cities
+        identifier: application_cities
+      - name: state_provinces
+        identifier: application_state_provinces
+      - name: countries
+        identifier: application_countries
+      - name: customers
+        identifier: sales_customers
+      - name: people
+        identifier: application_people
+      - name: payment_methods
+        identifier: application_payment_methods
+      - name: stock_items
+        identifier: warehouse_stock_items
+      - name: package_types
+        identifier: warehouse_package_types
+      - name: suppliers
+        identifier: purchasing_suppliers
+      - name: transaction_types
+        identifier: application_transaction_types
+      - name: invoices
+        identifier: sales_invoices
+      - name: invoice_lines
+        identifier: sales_invoice_lines
+      - name: orders
+        identifier: sales_orders
+      - name: order_lines
+        identifier: sales_order_lines
+      - name: stock_item_transactions
+        identifier: warehouse_stock_item_transactions
+      - name: purchase_orders
+        identifier: purchasing_purchase_orders
+      - name: purchase_order_lines
+        identifier: purchasing_purchase_order_lines
+      - name: customer_transactions
+        identifier: sales_customer_transactions
+      - name: supplier_transactions
+        identifier: purchasing_supplier_transactions
+      - name: stock_item_holdings
+        identifier: warehouse_stock_item_holdings
