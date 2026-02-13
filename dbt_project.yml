@@ -6,6 +6,9 @@ name: 'dbt_partnership_demo'
 version: '1.0.0'
 config-version: 2
 
+dbt-cloud:
+    project-id: 70471823552417
+
 # This setting configures which "profile" dbt uses for this project.
 profile: 'dbt_partnership_demo'
 
