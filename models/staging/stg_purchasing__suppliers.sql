@@ -1,19 +1,19 @@
 -- Staging: Purchasing.Suppliers (source for Dimension.Supplier). Replaces GetSupplierUpdates → Supplier_Staging.
 {{ config(materialized='view') }}
 with source as (
-    select * from {{ source('wwi_oltp', 'suppliers') }}
+    select * from {{ source('wwi_oltp', 'Suppliers') }}
 ),
 renamed as (
     select
-        supplier_id as wwi_supplier_id,
-        supplier_name as supplier,
-        supplier_category_id,
-        primary_contact_person_id,
-        supplier_reference,
-        payment_days,
-        delivery_postal_code as postal_code,
-        valid_from,
-        valid_to
+        supplierid as wwi_supplier_id,
+        suppliername as supplier,
+        suppliercategoryid as supplier_category_id,
+        primarycontactpersonid as primary_contact_person_id,
+        supplierreference as supplier_reference,
+        paymentdays as payment_days,
+        deliverypostalcode as postal_code,
+        validfrom,
+        validto
     from source
 )
 select * from renamed

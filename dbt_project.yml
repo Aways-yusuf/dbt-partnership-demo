@@ -6,6 +6,8 @@ name: 'dbt_partnership_demo'
 version: '1.0.0'
 config-version: 2
 
+profile: 'dbt_partnership_demo'
+
 dbt-cloud:
   project-id: 70471823552417
 
@@ -29,15 +31,17 @@ vars:
 
 models:
   dbt_partnership_demo:
+    # Staging & intermediate → dataset dbt_staging
     staging:
-      +schema: staging
+      +schema: dbt_staging
       +materialized: view
     intermediate:
-      +schema: intermediate
+      +schema: dbt_staging
       +materialized: view
+    # Dimensions & facts → dataset dbt_target
     dimensions:
-      +schema: dimensions
+      +schema: dbt_target
       +materialized: table
     facts:
-      +schema: facts
+      +schema: dbt_target
       +materialized: table

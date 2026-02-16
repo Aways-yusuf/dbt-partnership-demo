@@ -1,16 +1,16 @@
 -- Staging: Application.People (source for Dimension.Employee). Replaces GetEmployeeUpdates → Employee_Staging.
 {{ config(materialized='view') }}
 with source as (
-    select * from {{ source('wwi_oltp', 'people') }}
+    select * from {{ source('wwi_oltp', 'People') }}
 ),
 renamed as (
     select
-        person_id as wwi_employee_id,
-        full_name as employee,
-        preferred_name,
-        is_salesperson,
-        valid_from,
-        valid_to
+        personid as wwi_employee_id,
+        fullname as employee,
+        preferredname,
+        issalesperson,
+        validfrom,
+        validto
     from source
 )
 select * from renamed
