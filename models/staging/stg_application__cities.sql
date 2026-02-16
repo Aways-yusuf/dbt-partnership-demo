@@ -10,8 +10,8 @@ renamed as (
         stateprovinceid as state_province_id,
         location,
         coalesce(safe_cast(latestrecordedpopulation as int64), 0) as latest_recorded_population,
-        cast(validfrom as timestamp) as valid_from,
-        cast(validto as timestamp) as valid_to
+        safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as valid_from,
+        safe_cast(substr(cast(validto as string), 1, 26) as timestamp) as valid_to
     from source
 )
 select * from renamed

@@ -12,8 +12,8 @@ renamed as (
         supplierreference as supplier_reference,
         paymentdays as payment_days,
         deliverypostalcode as postal_code,
-        cast(validfrom as timestamp) as validfrom,
-        cast(validto as timestamp) as validto
+        safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as valid_from,
+        safe_cast(substr(cast(validto as string), 1, 26) as timestamp) as valid_to
     from source
 )
 select * from renamed

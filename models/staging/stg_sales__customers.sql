@@ -12,8 +12,8 @@ renamed as (
         safe_cast(buyinggroupid as int64) as buying_group_id,
         safe_cast(primarycontactpersonid as int64) as primary_contact_personid,
         deliverypostalcode as postal_code,
-        cast(validfrom as timestamp) as valid_from,
-        cast(validto as timestamp) as valid_to
+        safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as valid_from,
+        safe_cast(substr(cast(validto as string), 1, 26) as timestamp) as valid_to
     from source
 )
 select * from renamed
