@@ -10,7 +10,7 @@ renamed as (
         safe_cast(billtocustomerid as int64) as bill_to_customer_id,
         safe_cast(customercategoryid as int64) as customer_category_id,
         safe_cast(buyinggroupid as int64) as buying_group_id,
-        safe_cast(primarycontactpersonid as int64) as primary_contact_person_id,
+        safe_cast(primarycontactpersonid as int64) as primary_contact_personid,
         deliverypostalcode as postal_code,
         cast(validfrom as timestamp) as valid_from,
         cast(validto as timestamp) as valid_to

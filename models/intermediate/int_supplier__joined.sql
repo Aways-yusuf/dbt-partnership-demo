@@ -3,8 +3,15 @@
 -- Dependency: Stock Item (load order only; Supplier runs after Stock Item in SSIS).
 {{ config(materialized='view', schema='intermediate') }}
 with suppliers as (select * from {{ ref('stg_purchasing__suppliers') }}),
-     categories as (select * from {{ source('wwi_oltp', 'SupplierCategories') }}),
-     people as (select person_id, full_name from {{ source('wwi_oltp', 'People') }}),
+     categories as (
+         select safe_cast(suppliercategoryid as int64) as suppliercategoryid, suppliercategoryname ,
+                cast(validfrom as timestamp) as validfrom, cast(validto as timestamp) as validto
+         from {{ source('wwi_oltp', 'SupplierCategories') }}
+     ),
+     people as (
+         select safe_cast(personid as int64) as personid, fullname as fullname
+         from {{ source('wwi_oltp', 'People') }}
+     ),
 supplier_enriched as (
     select
         s.wwi_supplier_id,
@@ -12,14 +19,14 @@ supplier_enriched as (
         s.postal_code,
         s.supplier_reference,
         s.payment_days,
-        s.valid_from,
-        s.valid_to,
-        coalesce(sc.supplier_category_name, 'Unknown') as category,
-        coalesce(p.full_name, '') as primary_contact
+        s.validfrom,
+        s.validto,
+        coalesce(sc.suppliercategoryname, 'Unknown') as category,
+        coalesce(p.fullname, '') as primary_contact
     from suppliers s
-    left join categories sc on s.supplier_category_id = sc.supplier_category_id
-        and sc.valid_from <= s.valid_from and (sc.valid_to is null or sc.valid_to > s.valid_from)
-    left join people p on s.primary_contact_person_id = p.person_id
+    left join categories sc on s.suppliercategoryid = sc.suppliercategoryid
+        and sc.validfrom <= s.validfrom and (sc.validto is null or sc.validto > s.validfrom)
+    left join people p on s.primarycontactpersonid = p.personid
 ),
 with_valid_to as (
     select
@@ -30,8 +37,8 @@ with_valid_to as (
         supplier_reference,
         payment_days,
         postal_code,
-        valid_from,
-        coalesce(lead(valid_from) over (partition by wwi_supplier_id order by valid_from), timestamp('9999-12-31 23:59:59.999999')) as valid_to
+        validfrom as valid_from,
+        coalesce(lead(validfrom) over (partition by wwi_supplier_id order by validfrom), timestamp('9999-12-31 23:59:59.999999')) as valid_to
     from supplier_enriched
 )
 select * from with_valid_to

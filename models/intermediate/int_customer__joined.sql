@@ -38,7 +38,7 @@ customer_enriched as (
         and cc.valid_from <= c.valid_from and (cc.valid_to is null or cc.valid_to > c.valid_from)
     left join buying_groups bg on c.buying_group_id = bg.buying_group_id
         and bg.valid_from <= c.valid_from and (bg.valid_to is null or bg.valid_to > c.valid_from)
-    left join people p on c.primary_contact_person_id = p.person_id
+    left join people p on c.primary_contact_personid = p.person_id
     left join bill_to bt on c.bill_to_customer_id = bt.customer_id
         and bt.valid_from <= c.valid_from and (bt.valid_to is null or bt.valid_to > c.valid_from)
 ),

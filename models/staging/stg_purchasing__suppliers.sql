@@ -5,15 +5,15 @@ with source as (
 ),
 renamed as (
     select
-        supplierid as wwi_supplier_id,
+        safe_cast(supplierid as int64) as wwi_supplier_id,
         suppliername as supplier,
-        suppliercategoryid as supplier_category_id,
-        primarycontactpersonid as primary_contact_person_id,
+        safe_cast(suppliercategoryid as int64) as suppliercategoryid,
+        safe_cast(primarycontactpersonid as int64) as primarycontactpersonid,
         supplierreference as supplier_reference,
         paymentdays as payment_days,
         deliverypostalcode as postal_code,
-        validfrom,
-        validto
+        cast(validfrom as timestamp) as validfrom,
+        cast(validto as timestamp) as validto
     from source
 )
 select * from renamed
