@@ -1,5 +1,5 @@
 -- Dimension City (SCD2). Replaces MigrateStagedCityData → Dimension.City.
-{{ config(materialized='table', schema='dimensions') }}
+{{ config(materialized='table') }}
 with city_joined as (select * from {{ ref('int_city__joined') }})
 select
     row_number() over (order by wwi_city_id, valid_from) as city_key,

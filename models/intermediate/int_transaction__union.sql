@@ -1,5 +1,5 @@
 -- Union of Customer and Supplier transactions for Fact.Transaction. Replaces GetTransactionUpdates.
-{{ config(materialized='view', schema='intermediate') }}
+{{ config(materialized='view') }}
 with ct as (
     select date_key, 
     safe_cast(wwi_customer_transaction_id as int64) as wwi_customer_transaction_id,

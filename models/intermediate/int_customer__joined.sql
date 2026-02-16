@@ -1,16 +1,16 @@
 -- Intermediate: Customer + Category + Buying Group + Primary Contact + Bill To name (point-in-time).
 -- Replaces GetCustomerUpdates logic: SCD Type 2 with Category, Buying Group, Primary Contact from lookups.
 -- Dependency: City (load order only; no FK from Customer to City in DW).
-{{ config(materialized='view', schema='intermediate') }}
+{{ config(materialized='view') }}
 with customers as (select * from {{ ref('stg_sales__customers') }}),
      categories as (
          select safe_cast(customercategoryid as int64) as customer_category_id, customercategoryname as customer_category_name,
-                cast(validfrom as timestamp) as valid_from, cast(validto as timestamp) as valid_to
+                safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as valid_from, safe_cast(substr(cast(validto as string), 1, 26) as timestamp) as valid_to
          from {{ source('wwi_oltp', 'CustomerCategories') }}
      ),
      buying_groups as (
          select safe_cast(buyinggroupid as int64) as buying_group_id, buyinggroupname as buying_group_name,
-                cast(validfrom as timestamp) as valid_from, cast(validto as timestamp) as valid_to
+                safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as valid_from, safe_cast(substr(cast(validto as string), 1, 26) as timestamp) as valid_to
          from {{ source('wwi_oltp', 'BuyingGroups') }}
      ),
      people as (
@@ -19,7 +19,7 @@ with customers as (select * from {{ ref('stg_sales__customers') }}),
      ),
      bill_to as (
          select safe_cast(customerid as int64) as customer_id, customername as customer_name,
-                cast(validfrom as timestamp) as valid_from, cast(validto as timestamp) as valid_to
+                safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as valid_from, safe_cast(substr(cast(validto as string), 1, 26) as timestamp) as valid_to
          from {{ source('wwi_oltp', 'Customers') }}
      ),
 customer_enriched as (
