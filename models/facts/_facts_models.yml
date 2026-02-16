@@ -1,0 +1,15 @@
+# Facts. Replaces MigrateStaged*Data → Fact.*
+version: 2
+models:
+  - name: fct_sale
+    description: Fact.Sale
+  - name: fct_order
+    description: Fact.Order
+  - name: fct_movement
+    description: Fact.Movement
+  - name: fct_purchase
+    description: Fact.Purchase
+  - name: fct_stock_holding
+    description: Fact.Stock Holding
+  - name: fct_transaction
+    description: Fact.Transaction

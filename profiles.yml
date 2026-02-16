@@ -1,0 +1,17 @@
+wwi_bigquery:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('BQ_PROJECT', 'your-gcp-project') }}"
+      dataset: "{{ env_var('WWI_DW_DATASET', 'wide_world_importers_dw') }}"
+      threads: 4
+      timeout_seconds: 300
+    prod:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('BQ_PROJECT') }}"
+      dataset: "{{ env_var('WWI_DW_DATASET') }}"
+      threads: 8
+      timeout_seconds: 600
