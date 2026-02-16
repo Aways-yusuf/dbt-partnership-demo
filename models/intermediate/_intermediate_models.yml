@@ -1,0 +1,17 @@
+# Intermediate: joined / unioned staging for dimensions and facts
+version: 2
+models:
+  - name: int_city__joined
+    description: |
+      Cities joined with StateProvinces and Countries for Dimension.City.
+      Adds valid_from/valid_to for SCD2.
+  - name: int_customer__joined
+    description: |
+      Customers with SCD2 validity (valid_from, valid_to) for Dimension.Customer.
+  - name: int_supplier__joined
+    description: |
+      Suppliers with SCD2 validity for Dimension.Supplier.
+  - name: int_transaction__union
+    description: |
+      Union of CustomerTransactions and SupplierTransactions for Fact.Transaction.
+      Columns aligned (customer vs supplier IDs null where not applicable).

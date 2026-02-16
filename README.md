@@ -51,6 +51,16 @@ dbt run
 
 SSIS package variables (LastETLCutoffTime, TargetETLCutoffTime, LineageKey, TableName) and how to implement them in dbt (vars, incremental, run_id), plus build-order dependencies: see **[docs/ETL_VARS_AND_DEPENDENCIES.md](docs/ETL_VARS_AND_DEPENDENCIES.md)**.
 
+## Documentation
+
+- **Model and column descriptions** are in the schema YAML under `models/`:
+  - `models/facts/_facts_models.yml` — fact tables (grain, FKs, key columns)
+  - `models/dimensions/_dimensions_models.yml` — dimension tables
+  - `models/staging/_staging_models.yml` — staging views and source mapping
+  - `models/intermediate/_intermediate_models.yml` — intermediate models
+- **Source definitions** (tables, descriptions): `models/sources.yml`
+- **Reference docs** (dbt-fusion): `dbt man` (writes catalog/artifacts with `--write-json` / `--write-catalog`)
+
 ## Source reference
 
 Legacy definitions: `sql-server-samples-master/samples/databases/wide-world-importers/` (wwi-ssis, wwi-dw-ssdt, wwi-ssdt).
