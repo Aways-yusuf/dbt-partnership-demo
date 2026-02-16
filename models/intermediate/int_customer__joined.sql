@@ -5,6 +5,7 @@
 with customers as (select * from {{ ref('stg_sales__customers') }}),
      categories as (select * from {{ source('wwi_oltp', 'CustomerCategories') }}),
      buying_groups as (select * from {{ source('wwi_oltp', 'BuyingGroups') }}),
+<<<<<<< HEAD
      people as (select personid, fullname from {{ source('wwi_oltp', 'People') }}),
      bill_to as (select customerid, customername, validfrom, validto from {{ source('wwi_oltp', 'Customers') }}),
 customer_enriched as (
@@ -26,6 +27,29 @@ customer_enriched as (
     left join people p on c.primarycontactpersonid = p.personid
     left join bill_to bt on c.billtocustomerid = bt.customerid
         and bt.validfrom <= c.validfrom and (bt.validto is null or bt.validto > c.validfrom)
+=======
+     people as (select person_id, full_name from {{ source('wwi_oltp', 'People') }}),
+     bill_to as (select customer_id, customer_name, valid_from, valid_to from {{ source('wwi_oltp', 'Customers') }}),
+customer_enriched as (
+    select
+        c.wwi_customer_id,
+        c.customer,
+        c.postal_code,
+        c.valid_from,
+        c.valid_to,
+        coalesce(bt.customer_name, c.customer) as bill_to_customer,
+        coalesce(cc.customer_category_name, 'Unknown') as category,
+        coalesce(bg.buying_group_name, 'None') as buying_group,
+        coalesce(p.full_name, '') as primary_contact
+    from customers c
+    left join categories cc on c.customer_category_id = cc.customer_category_id
+        and cc.valid_from <= c.valid_from and (cc.valid_to is null or cc.valid_to > c.valid_from)
+    left join buying_groups bg on c.buying_group_id = bg.buying_group_id
+        and bg.valid_from <= c.valid_from and (bg.valid_to is null or bg.valid_to > c.valid_from)
+    left join people p on c.primary_contact_person_id = p.person_id
+    left join bill_to bt on c.bill_to_customer_id = bt.customer_id
+        and bt.valid_from <= c.valid_from and (bt.valid_to is null or bt.valid_to > c.valid_from)
+>>>>>>> aa729c57a4de3ef4f25d7f5d8895df9672bb50dd
 ),
 with_valid_to as (
     select

@@ -2,8 +2,13 @@
 {{ config(materialized='view') }}
 with po as (select * from {{ source('wwi_oltp', 'PurchaseOrders') }}),
      pol as (select * from {{ source('wwi_oltp', 'PurchaseOrderLines') }}),
+<<<<<<< HEAD
      si as (select stockitemid, quantityperouter from {{ source('wwi_oltp', 'StockItems') }}),
      pt as (select packagetypeid, packagetypename from {{ source('wwi_oltp', 'PackageTypes') }})
+=======
+     si as (select stock_item_id, quantity_per_outer from {{ source('wwi_oltp', 'StockItems') }}),
+     pt as (select package_type_id, package_type_name from {{ source('wwi_oltp', 'PackageTypes') }})
+>>>>>>> aa729c57a4de3ef4f25d7f5d8895df9672bb50dd
 select
     cast(po.orderdate as date) as date_key,
     po.supplierid as wwi_supplier_id,
