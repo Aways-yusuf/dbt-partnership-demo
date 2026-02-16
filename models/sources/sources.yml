@@ -1,0 +1,59 @@
+version: 2
+
+sources:
+  - name: wwi_source
+    description: "Wide World Importers source data from BigQuery"
+    database: data-platforms-66d-demos
+    schema: dbt_source
+    tables:
+      - name: Cities
+        description: "Source cities table"
+      - name: Customers
+        description: "Source customers table"
+      - name: People
+        description: "Source people/employees table"
+      - name: PaymentMethods
+        description: "Source payment methods table"
+      - name: StockItems
+        description: "Source stock items table"
+      - name: Suppliers
+        description: "Source suppliers table"
+      - name: TransactionTypes
+        description: "Source transaction types table"
+      - name: InvoiceLines
+        description: "Source invoice lines table"
+      - name: Invoices
+        description: "Source invoices table"
+      - name: PurchaseOrderLines
+        description: "Source purchase order lines table"
+      - name: PurchaseOrders
+        description: "Source purchase orders table"
+      - name: OrderLines
+        description: "Source order lines table"
+      - name: Orders
+        description: "Source orders table"
+      - name: CustomerTransactions
+        description: "Source customer transactions table"
+      - name: SupplierTransactions
+        description: "Source supplier transactions table"
+      - name: StockItemTransactions
+        description: "Source stock item transactions table"
+      - name: StockItemHoldings
+        description: "Source stock item holdings table"
+      - name: StateProvinces
+        description: "Source state provinces table"
+      - name: Countries
+        description: "Source countries table"
+      - name: BuyingGroups
+        description: "Source buying groups table"
+      - name: CustomerCategories
+        description: "Source customer categories table"
+      - name: DeliveryMethods
+        description: "Source delivery methods table"
+      - name: PackageTypes
+        description: "Source package types table"
+      - name: SupplierCategories
+        description: "Source supplier categories table"
+      - name: Colors
+        description: "Source colors table"
+
