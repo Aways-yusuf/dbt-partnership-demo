@@ -1,8 +1,6 @@
 # Dimensions (SCD2). Replaces MigrateStaged*Data → Dimension.*
 version: 2
 models:
-  - name: dim_date
-    description: Date dimension (replaces PopulateDateDimensionForYear)
   - name: dim_city
     description: Dimension.City
   - name: dim_customer
