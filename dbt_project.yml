@@ -6,7 +6,7 @@ name: 'dbt_partnership_demo'
 version: '1.0.0'
 config-version: 2
 
-profile: 'wwi_bigquery'
+profile: 'dbt_partnership_demo'
 
 dbt-cloud:
   project-id: 70471823552417
