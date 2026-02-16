@@ -8,7 +8,7 @@ renamed as (
         paymentmethodid as wwi_payment_method_id,
         paymentmethodname as payment_method,
         safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as validfrom,
-        safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as validto
+        safe_cast(substr(cast(validto as string), 1, 26) as timestamp) as validto
     from source
 )
 select * from renamed
