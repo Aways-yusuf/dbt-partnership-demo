@@ -1,6 +1,6 @@
 -- Staging: Sales.CustomerTransactions (part of Fact.Transaction). Replaces GetTransactionUpdates.
 {{ config(materialized='view') }}
-with source as (select * from {{ source('wwi_oltp', 'customer_transactions') }})
+with source as (select * from {{ source('wwi_oltp', 'CustomerTransactions') }})
 select
     customer_transaction_id as wwi_customer_transaction_id,
     cast(transaction_date as date) as date_key,

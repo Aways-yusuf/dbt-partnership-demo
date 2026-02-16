@@ -1,6 +1,6 @@
 -- Staging: Warehouse.StockItemTransactions (source for Fact.Movement). Replaces GetMovementUpdates → Movement_Staging.
 {{ config(materialized='view') }}
-with source as (select * from {{ source('wwi_oltp', 'stock_item_transactions') }})
+with source as (select * from {{ source('wwi_oltp', 'StockItemTransactions') }})
 select
     stock_item_transaction_id as wwi_stock_item_transaction_id,
     cast(transaction_occurred_when as date) as date_key,

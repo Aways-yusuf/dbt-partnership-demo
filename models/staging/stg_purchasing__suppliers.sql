@@ -1,7 +1,7 @@
 -- Staging: Purchasing.Suppliers (source for Dimension.Supplier). Replaces GetSupplierUpdates → Supplier_Staging.
 {{ config(materialized='view') }}
 with source as (
-    select * from {{ source('wwi_oltp', 'suppliers') }}
+    select * from {{ source('wwi_oltp', 'Suppliers') }}
 ),
 renamed as (
     select

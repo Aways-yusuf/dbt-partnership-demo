@@ -1,7 +1,7 @@
 -- Staging: Warehouse.StockItems (source for Dimension.Stock Item). Replaces GetStockItemUpdates → StockItem_Staging.
 {{ config(materialized='view') }}
 with source as (
-    select * from {{ source('wwi_oltp', 'stock_items') }}
+    select * from {{ source('wwi_oltp', 'StockItems') }}
 ),
 renamed as (
     select

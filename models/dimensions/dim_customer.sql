@@ -1,11 +1,17 @@
--- Dimension Customer (SCD2). Replaces MigrateStagedCustomerData → Dimension.Customer.
+-- Dimension Customer (SCD Type 2). Replaces MigrateStagedCustomerData → Dimension.Customer.
+-- Dependency: City dimension (load order; build City before Customer when using same run).
+-- Columns align with Integration.Customer_Staging / Dimension.Customer.
 {{ config(materialized='table', schema='dimensions') }}
-with customers as (select * from {{ ref('stg_sales__customers') }}),
-with_valid_to as (
-    select wwi_customer_id, customer, bill_to_customer_id, postal_code, valid_from,
-           coalesce(lead(valid_from) over (partition by wwi_customer_id order by valid_from), timestamp('9999-12-31 23:59:59.999999')) as valid_to
-    from customers
-)
-select row_number() over (order by wwi_customer_id, valid_from) as customer_key,
-       wwi_customer_id, customer, bill_to_customer_id, postal_code, valid_from, valid_to
-from with_valid_to
+with customer_joined as (select * from {{ ref('int_customer__joined') }})
+select
+    row_number() over (order by wwi_customer_id, valid_from) as customer_key,
+    wwi_customer_id,
+    customer,
+    bill_to_customer,
+    category,
+    buying_group,
+    primary_contact,
+    postal_code,
+    valid_from,
+    valid_to
+from customer_joined

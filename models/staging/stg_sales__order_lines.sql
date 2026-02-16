@@ -1,9 +1,9 @@
 -- Staging: Sales.Orders + OrderLines (source for Fact.Order). Replaces GetOrderUpdates → Order_Staging.
 {{ config(materialized='view') }}
-with orders as (select * from {{ source('wwi_oltp', 'orders') }}),
-     order_lines as (select * from {{ source('wwi_oltp', 'order_lines') }}),
-     customers as (select customer_id, delivery_city_id from {{ source('wwi_oltp', 'customers') }}),
-     package_types as (select package_type_id, package_type_name from {{ source('wwi_oltp', 'package_types') }})
+with orders as (select * from {{ source('wwi_oltp', 'Orders') }}),
+     order_lines as (select * from {{ source('wwi_oltp', 'OrderLines') }}),
+     customers as (select customer_id, delivery_city_id from {{ source('wwi_oltp', 'Customers') }}),
+     package_types as (select package_type_id, package_type_name from {{ source('wwi_oltp', 'PackageTypes') }})
 select
     o.order_id as wwi_order_id,
     ol.order_line_id as wwi_backorder_id,
