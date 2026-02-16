@@ -3,33 +3,25 @@
 -- Dependency: City (load order only; no FK from Customer to City in DW).
 {{ config(materialized='view', schema='intermediate') }}
 with customers as (select * from {{ ref('stg_sales__customers') }}),
-     categories as (select * from {{ source('wwi_oltp', 'CustomerCategories') }}),
-     buying_groups as (select * from {{ source('wwi_oltp', 'BuyingGroups') }}),
-<<<<<<< HEAD
-     people as (select personid, fullname from {{ source('wwi_oltp', 'People') }}),
-     bill_to as (select customerid, customername, validfrom, validto from {{ source('wwi_oltp', 'Customers') }}),
-customer_enriched as (
-    select
-        c.wwicustomerid,
-        c.customer,
-        c.postalcode,
-        c.validfrom,
-        c.validto,
-        coalesce(bt.customername, c.customer) as bill_to_customer,
-        coalesce(cc.customercategoryname, 'Unknown') as category,
-        coalesce(bg.buyinggroupname, 'None') as buying_group,
-        coalesce(p.fullname, '') as primary_contact
-    from customers c
-    left join categories cc on c.customer_category_id = cc.customercategoryid
-        and cc.validfrom <= c.validfrom and (cc.validto is null or cc.validto > c.validfrom)
-    left join buying_groups bg on c.buyinggroupid = bg.buyinggroupid
-        and bg.validfrom <= c.validfrom and (bg.validto is null or bg.validto > c.validfrom)
-    left join people p on c.primarycontactpersonid = p.personid
-    left join bill_to bt on c.billtocustomerid = bt.customerid
-        and bt.validfrom <= c.validfrom and (bt.validto is null or bt.validto > c.validfrom)
-=======
-     people as (select person_id, full_name from {{ source('wwi_oltp', 'People') }}),
-     bill_to as (select customer_id, customer_name, valid_from, valid_to from {{ source('wwi_oltp', 'Customers') }}),
+     categories as (
+         select safe_cast(customercategoryid as int64) as customer_category_id, customercategoryname as customer_category_name,
+                cast(validfrom as timestamp) as valid_from, cast(validto as timestamp) as valid_to
+         from {{ source('wwi_oltp', 'CustomerCategories') }}
+     ),
+     buying_groups as (
+         select safe_cast(buyinggroupid as int64) as buying_group_id, buyinggroupname as buying_group_name,
+                cast(validfrom as timestamp) as valid_from, cast(validto as timestamp) as valid_to
+         from {{ source('wwi_oltp', 'BuyingGroups') }}
+     ),
+     people as (
+         select safe_cast(personid as int64) as person_id, fullname as full_name
+         from {{ source('wwi_oltp', 'People') }}
+     ),
+     bill_to as (
+         select safe_cast(customerid as int64) as customer_id, customername as customer_name,
+                cast(validfrom as timestamp) as valid_from, cast(validto as timestamp) as valid_to
+         from {{ source('wwi_oltp', 'Customers') }}
+     ),
 customer_enriched as (
     select
         c.wwi_customer_id,
@@ -49,7 +41,6 @@ customer_enriched as (
     left join people p on c.primary_contact_person_id = p.person_id
     left join bill_to bt on c.bill_to_customer_id = bt.customer_id
         and bt.valid_from <= c.valid_from and (bt.valid_to is null or bt.valid_to > c.valid_from)
->>>>>>> aa729c57a4de3ef4f25d7f5d8895df9672bb50dd
 ),
 with_valid_to as (
     select

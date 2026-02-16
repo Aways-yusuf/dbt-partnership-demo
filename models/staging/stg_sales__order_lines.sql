@@ -2,13 +2,8 @@
 {{ config(materialized='view') }}
 with orders as (select * from {{ source('wwi_oltp', 'Orders') }}),
      order_lines as (select * from {{ source('wwi_oltp', 'OrderLines') }}),
-<<<<<<< HEAD
      customers as (select customerid, deliverycityid from {{ source('wwi_oltp', 'Customers') }}),
      package_types as (select packagetypeid, packagetypename from {{ source('wwi_oltp', 'PackageTypes') }})
-=======
-     customers as (select customer_id, delivery_city_id from {{ source('wwi_oltp', 'Customers') }}),
-     package_types as (select package_type_id, package_type_name from {{ source('wwi_oltp', 'PackageTypes') }})
->>>>>>> aa729c57a4de3ef4f25d7f5d8895df9672bb50dd
 select
     o.orderid as wwi_order_id,
     ol.orderlineid as wwi_backorder_id,

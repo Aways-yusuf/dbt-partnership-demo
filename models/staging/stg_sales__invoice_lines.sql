@@ -2,15 +2,9 @@
 {{ config(materialized='view') }}
 with invoices as (select * from {{ source('wwi_oltp', 'Invoices') }}),
      invoice_lines as (select * from {{ source('wwi_oltp', 'InvoiceLines') }}),
-<<<<<<< HEAD
      customers as (select customerid, deliverycityid from {{ source('wwi_oltp', 'Customers') }}),
      stock_items as (select stockitemid, ischillerstock from {{ source('wwi_oltp', 'StockItems') }}),
      package_types as (select packagetypeid, packagetypename from {{ source('wwi_oltp', 'PackageTypes') }})
-=======
-     customers as (select customer_id, delivery_city_id from {{ source('wwi_oltp', 'Customers') }}),
-     stock_items as (select stock_item_id, is_chiller_stock from {{ source('wwi_oltp', 'StockItems') }}),
-     package_types as (select package_type_id, package_type_name from {{ source('wwi_oltp', 'PackageTypes') }})
->>>>>>> aa729c57a4de3ef4f25d7f5d8895df9672bb50dd
 select
     cast(i.invoicedate as date) as invoice_date_key,
     cast(i.confirmeddeliverytime as date) as delivery_date_key,
