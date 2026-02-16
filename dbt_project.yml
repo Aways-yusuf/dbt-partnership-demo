@@ -6,8 +6,6 @@ name: 'dbt_partnership_demo'
 version: '1.0.0'
 config-version: 2
 
-profile: 'dbt_partnership_demo'
-
 dbt-cloud:
   project-id: 70471823552417
 
@@ -28,24 +26,20 @@ vars:
   wwi_dw_dataset: "{{ env_var('WWI_DW_DATASET', 'wide_world_importers_dw') }}"
   date_dim_start_year: 2013
   date_dim_end_year: "{{ var('date_dim_end_year', 2030) }}"
-  # Optional: for incremental loads (SSIS LastETLCutoffTime / TargetETLCutoffTime)
-  # Pass at run time: dbt run --vars '{"etl_cutoff_start": "2024-01-01 00:00:00", "etl_cutoff_end": "2024-01-02 00:00:00"}'
-  etl_cutoff_start: "{{ var('etl_cutoff_start', '') }}"
-  etl_cutoff_end: "{{ var('etl_cutoff_end', '') }}"
-  # Optional: run identifier for lineage (replaces SSIS LineageKey). Set via --vars '{"run_id": "run_123"}'
-  run_id: "{{ var('run_id', '') }}"
 
 models:
   dbt_partnership_demo:
+    # Staging & intermediate → dataset dbt_staging
     staging:
-      +schema: staging
+      +schema: dbt_staging
       +materialized: view
     intermediate:
-      +schema: intermediate
+      +schema: dbt_staging
       +materialized: view
+    # Dimensions & facts → dataset dbt_target
     dimensions:
-      +schema: dimensions
+      +schema: dbt_target
       +materialized: table
     facts:
-      +schema: facts
+      +schema: dbt_target
       +materialized: table
