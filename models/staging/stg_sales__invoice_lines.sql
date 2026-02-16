@@ -1,10 +1,10 @@
 -- Staging: Sales.InvoiceLines + Invoices (source for Fact.Sale). Replaces GetSaleUpdates → Sale_Staging.
 {{ config(materialized='view') }}
-with invoices as (select * from {{ source('wwi_oltp', 'invoices') }}),
-     invoice_lines as (select * from {{ source('wwi_oltp', 'invoice_lines') }}),
-     customers as (select customer_id, delivery_city_id from {{ source('wwi_oltp', 'customers') }}),
-     stock_items as (select stock_item_id, is_chiller_stock from {{ source('wwi_oltp', 'stock_items') }}),
-     package_types as (select package_type_id, package_type_name from {{ source('wwi_oltp', 'package_types') }})
+with invoices as (select * from {{ source('wwi_oltp', 'Invoices') }}),
+     invoice_lines as (select * from {{ source('wwi_oltp', 'InvoiceLines') }}),
+     customers as (select customer_id, delivery_city_id from {{ source('wwi_oltp', 'Customers') }}),
+     stock_items as (select stock_item_id, is_chiller_stock from {{ source('wwi_oltp', 'StockItems') }}),
+     package_types as (select package_type_id, package_type_name from {{ source('wwi_oltp', 'PackageTypes') }})
 select
     cast(i.invoice_date as date) as invoice_date_key,
     cast(i.confirmed_delivery_time as date) as delivery_date_key,

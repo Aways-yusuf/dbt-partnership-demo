@@ -1,7 +1,7 @@
 -- Staging: Application.PaymentMethods (source for Dimension.Payment Method). Replaces GetPaymentMethodUpdates → PaymentMethod_Staging.
 {{ config(materialized='view') }}
 with source as (
-    select * from {{ source('wwi_oltp', 'payment_methods') }}
+    select * from {{ source('wwi_oltp', 'PaymentMethods') }}
 ),
 renamed as (
     select

@@ -1,9 +1,9 @@
 -- Staging: Purchasing.PurchaseOrders + PurchaseOrderLines (source for Fact.Purchase). Replaces GetPurchaseUpdates → Purchase_Staging.
 {{ config(materialized='view') }}
-with po as (select * from {{ source('wwi_oltp', 'purchase_orders') }}),
-     pol as (select * from {{ source('wwi_oltp', 'purchase_order_lines') }}),
-     si as (select stock_item_id, quantity_per_outer from {{ source('wwi_oltp', 'stock_items') }}),
-     pt as (select package_type_id, package_type_name from {{ source('wwi_oltp', 'package_types') }})
+with po as (select * from {{ source('wwi_oltp', 'PurchaseOrders') }}),
+     pol as (select * from {{ source('wwi_oltp', 'PurchaseOrderLines') }}),
+     si as (select stock_item_id, quantity_per_outer from {{ source('wwi_oltp', 'StockItems') }}),
+     pt as (select package_type_id, package_type_name from {{ source('wwi_oltp', 'PackageTypes') }})
 select
     cast(po.order_date as date) as date_key,
     po.supplier_id as wwi_supplier_id,

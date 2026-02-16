@@ -1,7 +1,7 @@
 -- Staging: Application.StateProvinces (for Dimension.City).
 {{ config(materialized='view') }}
 with source as (
-    select * from {{ source('wwi_oltp', 'state_provinces') }}
+    select * from {{ source('wwi_oltp', 'StateProvinces') }}
 ),
 renamed as (
     select

@@ -1,6 +1,6 @@
 -- Staging: Purchasing.SupplierTransactions (part of Fact.Transaction). Replaces GetTransactionUpdates.
 {{ config(materialized='view') }}
-with source as (select * from {{ source('wwi_oltp', 'supplier_transactions') }})
+with source as (select * from {{ source('wwi_oltp', 'SupplierTransactions') }})
 select
     supplier_transaction_id as wwi_supplier_transaction_id,
     cast(transaction_date as date) as date_key,

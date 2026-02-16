@@ -1,7 +1,7 @@
 -- Staging: Application.Cities (source for Dimension.City). Replaces GetCityUpdates → City_Staging.
 {{ config(materialized='view') }}
 with source as (
-    select * from {{ source('wwi_oltp', 'cities') }}
+    select * from {{ source('wwi_oltp', 'Cities') }}
 ),
 renamed as (
     select

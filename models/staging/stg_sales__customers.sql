@@ -1,7 +1,7 @@
 -- Staging: Sales.Customers (source for Dimension.Customer). Replaces GetCustomerUpdates → Customer_Staging.
 {{ config(materialized='view') }}
 with source as (
-    select * from {{ source('wwi_oltp', 'customers') }}
+    select * from {{ source('wwi_oltp', 'Customers') }}
 ),
 renamed as (
     select

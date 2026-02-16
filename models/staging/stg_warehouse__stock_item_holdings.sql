@@ -1,6 +1,6 @@
 -- Staging: Warehouse.StockItemHoldings (source for Fact.Stock Holding). Replaces GetStockHoldingUpdates → StockHolding_Staging.
 {{ config(materialized='view') }}
-with source as (select * from {{ source('wwi_oltp', 'stock_item_holdings') }})
+with source as (select * from {{ source('wwi_oltp', 'StockItemHoldings') }})
 select
     stock_item_id as wwi_stock_item_id,
     quantity_on_hand as quantity_on_hand,
