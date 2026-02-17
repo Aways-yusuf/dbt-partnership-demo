@@ -1,5 +1,5 @@
 -- Dimension Employee (SCD2). Replaces MigrateStagedEmployeeData → Dimension.Employee.
-{{ config(materialized='table', schema='dimensions') }}
+{{ config(materialized='table') }}
 with people as (select * from {{ ref('stg_application__people') }}),
 with_valid_to as (
     select wwi_employee_id, employee, preferred_name, valid_from,

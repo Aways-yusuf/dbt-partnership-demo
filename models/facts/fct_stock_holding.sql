@@ -1,5 +1,5 @@
 -- Fact Stock Holding. Replaces MigrateStagedStockHoldingData → Fact.Stock Holding.
-{{ config(materialized='table', schema='facts') }}
+{{ config(materialized='table') }}
 with stg as (select * from {{ ref('stg_warehouse__stock_item_holdings') }}),
      dsi as (select * from {{ ref('dim_stock_item') }})
 select

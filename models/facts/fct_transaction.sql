@@ -1,5 +1,5 @@
 -- Fact Transaction. Replaces MigrateStagedTransactionData → Fact.Transaction.
-{{ config(materialized='table', schema='facts') }}
+{{ config(materialized='table') }}
 with stg as (select * from {{ ref('int_transaction__union') }}),
      dcu as (select * from {{ ref('dim_customer') }}),
      dsu as (select * from {{ ref('dim_supplier') }}),

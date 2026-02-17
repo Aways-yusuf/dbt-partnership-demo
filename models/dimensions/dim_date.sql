@@ -1,5 +1,5 @@
 -- Date dimension. Replaces Integration.PopulateDateDimensionForYear + GenerateDateDimensionColumns.
-{{ config(materialized='table', schema='dimensions') }}
+{{ config(materialized='table') }}
 with date_range as (
     select date_value from unnest(generate_date_array(date({{ var('date_dim_start_year') }}, 1, 1), date({{ var('date_dim_end_year') }}, 12, 31), interval 1 day)) as date_value
 )

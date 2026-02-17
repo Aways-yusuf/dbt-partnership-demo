@@ -6,3 +6,5 @@ logs/
 .DS_Store
 dbt_internal_packages/
 .cursor
+dbt-env/
+.user.yml

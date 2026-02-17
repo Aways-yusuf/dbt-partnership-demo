@@ -5,15 +5,15 @@ with source as (
 ),
 renamed as (
     select
-        customer_id as wwi_customer_id,
-        customer_name as customer,
-        bill_to_customer_id,
-        customer_category_id,
-        buying_group_id,
-        primary_contact_person_id,
-        delivery_postal_code as postal_code,
-        valid_from,
-        valid_to
+        CustomerID as wwi_customer_id,
+        CustomerName as customer,
+        BillToCustomerID,
+        CustomerCategoryID,
+        BuyingGroupID,
+        PrimaryContactPersonID,
+        DeliveryPostalCode as postal_code,
+        ValidFrom,
+        ValidTo
     from source
 )
 select * from renamed

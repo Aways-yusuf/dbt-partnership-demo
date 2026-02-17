@@ -1,19 +1,21 @@
 -- Staging: Purchasing.Suppliers (source for Dimension.Supplier). Replaces GetSupplierUpdates → Supplier_Staging.
+-- Columns aligned to actual BigQuery schema: SupplierID, SupplierName, SupplierCategoryID,
+-- PrimaryContactPersonID, SupplierReference, PaymentDays, DeliveryPostalCode (INTEGER), ValidFrom/ValidTo (TIMESTAMP).
 {{ config(materialized='view') }}
 with source as (
     select * from {{ source('wwi_oltp', 'Suppliers') }}
 ),
 renamed as (
     select
-        supplier_id as wwi_supplier_id,
-        supplier_name as supplier,
-        supplier_category_id,
-        primary_contact_person_id,
-        supplier_reference,
-        payment_days,
-        delivery_postal_code as postal_code,
-        valid_from,
-        valid_to
+        SupplierID as wwi_supplier_id,
+        SupplierName as supplier,
+        SupplierCategoryID,
+        PrimaryContactPersonID,
+        SupplierReference as supplier_reference,
+        PaymentDays as payment_days,
+        DeliveryPostalCode as postal_code,
+        ValidFrom,
+        ValidTo
     from source
 )
 select * from renamed

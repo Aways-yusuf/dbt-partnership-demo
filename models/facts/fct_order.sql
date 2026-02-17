@@ -1,5 +1,5 @@
 -- Fact Order. Replaces MigrateStagedOrderData → Fact.Order.
-{{ config(materialized='table', schema='facts') }}
+{{ config(materialized='table') }}
 with stg as (select * from {{ ref('stg_sales__order_lines') }}),
      dc as (select * from {{ ref('dim_city') }}),
      dcu as (select * from {{ ref('dim_customer') }}),

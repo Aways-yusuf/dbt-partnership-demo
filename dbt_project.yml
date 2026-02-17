@@ -6,6 +6,8 @@ name: 'dbt_partnership_demo'
 version: '1.0.0'
 config-version: 2
 
+profile: 'dbt_partnership_demo'
+
 dbt-cloud:
   project-id: 70471823552417
 
@@ -22,10 +24,10 @@ clean-targets:
   - "dbt_packages"
 
 vars:
-  wwi_source_dataset: "{{ env_var('WWI_SOURCE_DATASET', 'wide_world_importers') }}"
-  wwi_dw_dataset: "{{ env_var('WWI_DW_DATASET', 'wide_world_importers_dw') }}"
+  wwi_source_dataset: "{{ env_var('WWI_SOURCE_DATASET', 'dbt_source') }}"
+  wwi_dw_dataset: "{{ env_var('WWI_DW_DATASET', 'dbt_target') }}"
   date_dim_start_year: 2013
-  date_dim_end_year: "{{ var('date_dim_end_year', 2030) }}"
+  date_dim_end_year: 2030
 
 models:
   dbt_partnership_demo:

@@ -1,55 +1,58 @@
-# Source: WideWorldImporters OLTP replicated to BigQuery (align identifiers to your replication)
+# Source: WideWorldImporters OLTP in BigQuery.
+# - "name" = logical name used in SQL: source('wwi_oltp', 'Customers')
+# - "identifier" = actual table name in BigQuery (must match your dataset).
+# Set WWI_SOURCE_DATASET env var to the dataset where these tables live.
 
 version: 2
 sources:
   - name: wwi_oltp
     description: WideWorldImporters transactional database
     database: "data-platforms-66d-demos"
-    schema: dbt_source
+    schema: "dbt_source"
     tables:
       - name: Cities
-        identifier: application_cities
+        identifier: Cities
       - name: StateProvinces
-        identifier: application_state_provinces
+        identifier: StateProvinces
       - name: Countries
-        identifier: application_countries
+        identifier: Countries
       - name: Customers
-        identifier: sales_customers
+        identifier: Customers
       - name: CustomerCategories
-        identifier: sales_customer_categories
+        identifier: CustomerCategories
       - name: BuyingGroups
-        identifier: sales_buying_groups
+        identifier: BuyingGroups
       - name: People
-        identifier: application_people
+        identifier: People
       - name: PaymentMethods
-        identifier: application_payment_methods
+        identifier: PaymentMethods
       - name: StockItems
-        identifier: warehouse_stock_items
+        identifier: StockItems
       - name: PackageTypes
-        identifier: warehouse_package_types
+        identifier: PackageTypes
       - name: Suppliers
-        identifier: purchasing_suppliers
+        identifier: Suppliers
       - name: SupplierCategories
-        identifier: purchasing_supplier_categories
+        identifier: SupplierCategories
       - name: TransactionTypes
-        identifier: application_transaction_types
+        identifier: TransactionTypes
       - name: Invoices
-        identifier: sales_invoices
+        identifier: Invoices
       - name: InvoiceLines
-        identifier: sales_invoice_lines
+        identifier: InvoiceLines
       - name: Orders
-        identifier: sales_orders
+        identifier: Orders
       - name: OrderLines
-        identifier: sales_order_lines
+        identifier: OrderLines
       - name: StockItemTransactions
-        identifier: warehouse_stock_item_transactions
+        identifier: StockItemTransactions
       - name: PurchaseOrders
-        identifier: purchasing_purchase_orders
+        identifier: PurchaseOrders
       - name: PurchaseOrderLines
-        identifier: purchasing_purchase_order_lines
+        identifier: PurchaseOrderLines
       - name: CustomerTransactions
-        identifier: sales_customer_transactions
+        identifier: CustomerTransactions
       - name: SupplierTransactions
-        identifier: purchasing_supplier_transactions
+        identifier: SupplierTransactions
       - name: StockItemHoldings
-        identifier: warehouse_stock_item_holdings
+        identifier: StockItemHoldings

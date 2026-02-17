@@ -1,5 +1,5 @@
 -- Intermediate: City + State Province + Country (point-in-time). Replaces GetCityUpdates temporal logic.
-{{ config(materialized='view', schema='intermediate') }}
+{{ config(materialized='view') }}
 with cities as (select * from {{ ref('stg_application__cities') }}),
      state_provinces as (select * from {{ ref('stg_application__state_provinces') }}),
      countries as (select * from {{ ref('stg_application__countries') }}),

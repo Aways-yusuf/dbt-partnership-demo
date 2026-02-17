@@ -1,5 +1,5 @@
 -- Fact Purchase. Replaces MigrateStagedPurchaseData → Fact.Purchase.
-{{ config(materialized='table', schema='facts') }}
+{{ config(materialized='table') }}
 with stg as (select * from {{ ref('stg_purchasing__purchase_order_lines') }}),
      dsu as (select * from {{ ref('dim_supplier') }}),
      dsi as (select * from {{ ref('dim_stock_item') }})

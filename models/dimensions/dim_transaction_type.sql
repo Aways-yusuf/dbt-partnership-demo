@@ -1,5 +1,5 @@
 -- Dimension Transaction Type (SCD2). Replaces MigrateStagedTransactionTypeData → Dimension.Transaction Type.
-{{ config(materialized='table', schema='dimensions') }}
+{{ config(materialized='table') }}
 with tt as (select * from {{ ref('stg_application__transaction_types') }}),
 with_valid_to as (
     select wwi_transaction_type_id, transaction_type, valid_from,
