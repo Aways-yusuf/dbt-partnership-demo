@@ -1,0 +1,35 @@
+# Staging layer: 1:1 with source or light transforms (replaces SSIS Get*Updates → *_Staging)
+version: 2
+models:
+  - name: stg_application__cities
+    description: Application.Cities → Dimension.City
+  - name: stg_application__state_provinces
+    description: Application.StateProvinces → Dimension.City
+  - name: stg_application__countries
+    description: Application.Countries → Dimension.City
+  - name: stg_sales__customers
+    description: Sales.Customers → Dimension.Customer
+  - name: stg_application__people
+    description: Application.People → Dimension.Employee
+  - name: stg_application__payment_methods
+    description: Application.PaymentMethods → Dimension.Payment Method
+  - name: stg_warehouse__stock_items
+    description: Warehouse.StockItems → Dimension.Stock Item
+  - name: stg_purchasing__suppliers
+    description: Purchasing.Suppliers → Dimension.Supplier
+  - name: stg_application__transaction_types
+    description: Application.TransactionTypes → Dimension.Transaction Type
+  - name: stg_sales__invoice_lines
+    description: Sales.InvoiceLines + Invoices → Fact.Sale
+  - name: stg_sales__order_lines
+    description: Sales.Orders + OrderLines → Fact.Order
+  - name: stg_warehouse__stock_item_transactions
+    description: Warehouse.StockItemTransactions → Fact.Movement
+  - name: stg_purchasing__purchase_order_lines
+    description: Purchasing.PurchaseOrders + Lines → Fact.Purchase
+  - name: stg_warehouse__stock_item_holdings
+    description: Warehouse.StockItemHoldings → Fact.Stock Holding
+  - name: stg_sales__customer_transactions
+    description: Sales.CustomerTransactions → Fact.Transaction
+  - name: stg_purchasing__supplier_transactions
+    description: Purchasing.SupplierTransactions → Fact.Transaction

@@ -1,0 +1,17 @@
+# Dimensions (SCD2). Replaces MigrateStaged*Data → Dimension.*
+version: 2
+models:
+  - name: dim_city
+    description: Dimension.City
+  - name: dim_customer
+    description: Dimension.Customer
+  - name: dim_employee
+    description: Dimension.Employee
+  - name: dim_payment_method
+    description: Dimension.Payment Method
+  - name: dim_stock_item
+    description: Dimension.Stock Item
+  - name: dim_supplier
+    description: Dimension.Supplier
+  - name: dim_transaction_type
+    description: Dimension.Transaction Type

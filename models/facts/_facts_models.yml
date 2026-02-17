@@ -1,0 +1,179 @@
+# Facts. Replaces MigrateStaged*Data → Fact.*
+# Grain: one row per invoice line (sale), order line (order), stock transaction (movement), etc.
+version: 2
+models:
+  - name: fct_sale
+    description: |
+      Fact.Sale — one row per invoice line.
+      Built from Sales.InvoiceLines + Invoices; joins to dim_city, dim_customer (customer + bill-to), dim_stock_item, dim_employee (salesperson).
+    columns:
+      - name: city_key
+        description: FK to dim_city (delivery city).
+      - name: customer_key
+        description: FK to dim_customer (sold-to customer).
+      - name: bill_to_customer_key
+        description: FK to dim_customer (bill-to customer).
+      - name: stock_item_key
+        description: FK to dim_stock_item.
+      - name: invoice_date_key
+        description: Invoice date (date key).
+      - name: delivery_date_key
+        description: Confirmed delivery date (date key).
+      - name: salesperson_key
+        description: FK to dim_employee (salesperson).
+      - name: wwi_invoice_id
+        description: Source system invoice ID.
+      - name: quantity
+        description: Quantity sold.
+      - name: total_including_tax
+        description: Line total including tax.
+
+  - name: fct_order
+    description: |
+      Fact.Order — one row per sales order line.
+      Built from Sales.Orders + OrderLines; joins to dim_city, dim_customer, dim_stock_item, dim_employee (salesperson, picker).
+    columns:
+      - name: city_key
+        description: FK to dim_city (delivery city).
+      - name: customer_key
+        description: FK to dim_customer.
+      - name: stock_item_key
+        description: FK to dim_stock_item.
+      - name: order_date_key
+        description: Order date (date key).
+      - name: picked_date_key
+        description: Picking completed date (date key).
+      - name: salesperson_key
+        description: FK to dim_employee (salesperson).
+      - name: picker_key
+        description: FK to dim_employee (picker).
+      - name: wwi_order_id
+        description: Source system order ID.
+      - name: quantity
+        description: Quantity ordered.
+
+  - name: fct_movement
+    description: |
+      Fact.Movement — one row per warehouse stock item transaction.
+      Built from Warehouse.StockItemTransactions; joins to dim_stock_item, dim_customer, dim_supplier, dim_transaction_type.
+    columns:
+      - name: date_key
+        description: Transaction date (date key).
+      - name: stock_item_key
+        description: FK to dim_stock_item.
+      - name: customer_key
+        description: FK to dim_customer (0 if not customer-related).
+      - name: supplier_key
+        description: FK to dim_supplier (0 if not supplier-related).
+      - name: transaction_type_key
+        description: FK to dim_transaction_type.
+      - name: wwi_stock_item_transaction_id
+        description: Source system stock item transaction ID.
+      - name: quantity
+        description: Quantity moved (signed).
+
+  - name: fct_purchase
+    description: |
+      Fact.Purchase — one row per purchase order line.
+      Built from Purchasing.PurchaseOrders + PurchaseOrderLines; joins to dim_supplier, dim_stock_item.
+    columns:
+      - name: date_key
+        description: Purchase order date (date key).
+        tests:
+          - not_null
+      - name: supplier_key
+        description: FK to dim_supplier.
+      - name: stock_item_key
+        description: FK to dim_stock_item.
+      - name: wwi_purchase_order_id
+        description: Source system purchase order ID.
+      - name: ordered_quantity
+        description: Quantity ordered (outer × quantity per outer).
+      - name: is_order_finalized
+        description: Whether the order line is finalized.
+
+  - name: fct_stock_holding
+    description: |
+      Fact.Stock Holding — one row per stock item holding (current snapshot).
+      Built from Warehouse.StockItemHoldings; joins to dim_stock_item using current_timestamp for SCD2.
+    columns:
+      - name: stock_item_key
+        description: FK to dim_stock_item (current version).
+      - name: quantity_on_hand
+        description: Quantity on hand.
+      - name: bin_location
+        description: Bin/warehouse location.
+      - name: reorder_level
+        description: Reorder level threshold.
+      - name: target_stock_level
+        description: Target stock level.
+
+  - name: fct_transaction
+    description: |
+      Fact.Transaction — one row per customer or supplier transaction (unioned).
+      Built from CustomerTransactions and SupplierTransactions; joins to dim_customer (customer + bill-to), dim_supplier, dim_transaction_type, dim_payment_method.
+    columns:
+      - name: date_key
+        description: Transaction date (date key).
+      - name: customer_key
+        description: FK to dim_customer (0 for supplier transactions).
+      - name: bill_to_customer_key
+        description: FK to dim_customer bill-to (0 for supplier).
+      - name: supplier_key
+        description: FK to dim_supplier (0 for customer transactions).
+      - name: transaction_type_key
+        description: FK to dim_transaction_type.
+      - name: payment_method_key
+        description: FK to dim_payment_method.
+      - name: wwi_customer_transaction_id
+        description: Source customer transaction ID (null for supplier).
+      - name: wwi_supplier_transaction_id
+        description: Source supplier transaction ID (null for customer).
+      - name: total_including_tax
+        description: Transaction total including tax.
+      - name: outstanding_balance
+        description: Outstanding balance.
+
+unit_tests:
+  # Scenario: one PO line with matching supplier and stock item (keys resolved).
+  - name: test_fct_purchase_resolves_supplier_and_stock_item_keys
+    description: >
+      Given one staging PO line and matching dim_supplier/dim_stock_item rows,
+      expect one fact row with supplier_key=1, stock_item_key=1.
+    model: fct_purchase
+    given:
+      - input: ref('stg_purchasing__purchase_order_lines')
+        rows:
+          - date_key: 2024-06-01
+            wwi_supplier_id: 1
+            wwi_stock_item_id: 1
+            wwi_purchase_order_id: 1
+            orderedouters: 10
+            ordered_quantity: 100
+            receivedouters: 0
+            package: Box
+            is_order_finalized: true
+            last_modified_when: "2024-06-01 12:00:00"
+      - input: ref('dim_supplier')
+        rows:
+          - supplier_key: 1
+            wwi_supplier_id: 1
+            valid_from: "2020-01-01 00:00:00"
+            valid_to: "9999-12-31 23:59:59"
+      - input: ref('dim_stock_item')
+        rows:
+          - stock_item_key: 1
+            wwi_stock_item_id: 1
+            valid_from: "2020-01-01 00:00:00"
+            valid_to: "9999-12-31 23:59:59"
+    expect:
+      rows:
+        - date_key: 2024-06-01
+          supplier_key: 1
+          stock_item_key: 1
+          wwi_purchase_order_id: 1
+          ordered_outers: 10
+          ordered_quantity: 100
+          received_outers: 0
+          package: Box
+          is_order_finalized: true

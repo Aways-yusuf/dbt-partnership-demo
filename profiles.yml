@@ -1,0 +1,17 @@
+dbt_partnership_demo:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: "data-platforms-66d-demos"
+      dataset: dbt_target
+      threads: 8
+      timeout_seconds: 300
+    prod:
+      type: bigquery
+      method: oauth
+      project: "data-platforms-66d-demos"
+      dataset: dbt_target
+      threads: 8
+      timeout_seconds: 600

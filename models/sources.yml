@@ -1,0 +1,55 @@
+# Source: WideWorldImporters OLTP replicated to BigQuery (align identifiers to your replication)
+
+version: 2
+sources:
+  - name: wwi_oltp
+    description: WideWorldImporters (WWI) OLTP database replicated to BigQuery. Source for staging and dimensions.
+    database: "data-platforms-66d-demos"
+    schema: dbt_source
+    tables:
+      - name: Cities
+        description: Application.Cities — city lookup for Dimension.City
+      - name: StateProvinces
+        description: Application.StateProvinces — state/province for City
+      - name: Countries
+        description: Application.Countries — country for City
+      - name: Customers
+        description: Sales.Customers — customer master for Dimension.Customer and Fact.Order / Fact.Sale
+      - name: CustomerCategories
+        description: Customer categorization
+      - name: BuyingGroups
+        description: Buying groups
+      - name: People
+        description: Application.People — people/employees for Dimension.Employee
+      - name: PaymentMethods
+        description: Application.PaymentMethods — for Dimension.Payment Method and Fact.Transaction
+      - name: StockItems
+        description: Warehouse.StockItems — for Dimension.Stock Item and fact lookups
+      - name: PackageTypes
+        description: Package types (e.g. for order/invoice line package)
+      - name: Suppliers
+        description: Purchasing.Suppliers — for Dimension.Supplier
+      - name: SupplierCategories
+        description: Supplier categorization
+      - name: TransactionTypes
+        description: Application.TransactionTypes — for Dimension.Transaction Type
+      - name: Invoices
+        description: Sales.Invoices — header for Fact.Sale (with InvoiceLines)
+      - name: InvoiceLines
+        description: Sales.InvoiceLines — line-level for Fact.Sale
+      - name: Orders
+        description: Sales.Orders — header for Fact.Order (with OrderLines)
+      - name: OrderLines
+        description: Sales.OrderLines — line-level for Fact.Order
+      - name: StockItemTransactions
+        description: Warehouse.StockItemTransactions — source for Fact.Movement
+      - name: PurchaseOrders
+        description: Purchasing.PurchaseOrders — header for Fact.Purchase
+      - name: PurchaseOrderLines
+        description: Purchasing.PurchaseOrderLines — line-level for Fact.Purchase
+      - name: CustomerTransactions
+        description: Sales.CustomerTransactions — source for Fact.Transaction (customer side)
+      - name: SupplierTransactions
+        description: Purchasing.SupplierTransactions — source for Fact.Transaction (supplier side)
+      - name: StockItemHoldings
+        description: Warehouse.StockItemHoldings — current stock by item for Fact.Stock Holding
