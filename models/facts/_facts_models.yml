@@ -79,6 +79,8 @@ models:
     columns:
       - name: date_key
         description: Purchase order date (date key).
+        tests:
+          - not_null
       - name: supplier_key
         description: FK to dim_supplier.
       - name: stock_item_key
@@ -131,3 +133,47 @@ models:
         description: Transaction total including tax.
       - name: outstanding_balance
         description: Outstanding balance.
+
+unit_tests:
+  # Scenario: one PO line with matching supplier and stock item (keys resolved).
+  - name: test_fct_purchase_resolves_supplier_and_stock_item_keys
+    description: >
+      Given one staging PO line and matching dim_supplier/dim_stock_item rows,
+      expect one fact row with supplier_key=1, stock_item_key=1.
+    model: fct_purchase
+    given:
+      - input: ref('stg_purchasing__purchase_order_lines')
+        rows:
+          - date_key: 2024-06-01
+            wwi_supplier_id: 1
+            wwi_stock_item_id: 1
+            wwi_purchase_order_id: 1
+            orderedouters: 10
+            ordered_quantity: 100
+            receivedouters: 0
+            package: Box
+            is_order_finalized: true
+            last_modified_when: "2024-06-01 12:00:00"
+      - input: ref('dim_supplier')
+        rows:
+          - supplier_key: 1
+            wwi_supplier_id: 1
+            valid_from: "2020-01-01 00:00:00"
+            valid_to: "9999-12-31 23:59:59"
+      - input: ref('dim_stock_item')
+        rows:
+          - stock_item_key: 1
+            wwi_stock_item_id: 1
+            valid_from: "2020-01-01 00:00:00"
+            valid_to: "9999-12-31 23:59:59"
+    expect:
+      rows:
+        - date_key: 2024-06-01
+          supplier_key: 1
+          stock_item_key: 1
+          wwi_purchase_order_id: 1
+          ordered_outers: 10
+          ordered_quantity: 100
+          received_outers: 0
+          package: Box
+          is_order_finalized: true
