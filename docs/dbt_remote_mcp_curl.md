@@ -36,7 +36,7 @@ That error means the server returned **non-JSON** (usually an HTML error page). 
 # Copy these from the "dbt-mcp-remote" -> "headers" section of mcp.json
 # Use the Authorization value exactly as in mcp.json (it usually already includes "Bearer ")
 export DBT_MCP_URL="https://yh400.us1.dbt.com/api/ai/v1/mcp/"
-export DBT_MCP_AUTH="Bearer dbtu_GhXMfi4aaPoRfnKunbrtpcjkjRjbAQKvEdGpsubAZe3i3zImgo" 
+export DBT_MCP_AUTH="Bearer " 
 export DBT_PROD_ENV_ID="70471823520349"    
 export DBT_USER_ID="70471823501502"                    
 export DBT_DEV_ENV_ID="70471823519177"     
