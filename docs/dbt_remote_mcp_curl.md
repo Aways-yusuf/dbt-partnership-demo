@@ -279,7 +279,7 @@ python scripts/dbt_mcp_call.py execute_sql $'{"sql": "SELECT id\nFROM my_table\n
 
 ```bash
 
-Commands to run
+DBT remote command, MCP Curl command
 
 python3 scripts/dbt_mcp_call.py get_all_models
 python3 scripts/dbt_mcp_call.py get_all_macros
@@ -289,5 +289,14 @@ python3 scripts/dbt_mcp_call.py get_model_parents '{"name": "fct_transaction"}'
 python3 scripts/dbt_mcp_call.py get_lineage '{"unique_id": "model.dbt_partnership_demo.fct_purchase"}'
 python3 scripts/dbt_mcp_call.py execute_sql '{"sql": "SELECT * FROM dbt_target.fct_purchase LIMIT 5"}'
 
+
+DBT Local commands
+
+get_lineage of fct_order
+list
+run
+test
+list_job_runs
+get_job_run_details 70471866414705
 
 ```

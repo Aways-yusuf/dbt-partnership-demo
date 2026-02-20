@@ -203,11 +203,9 @@ def main(request):
     print("Converting SSIS package to dbt models")
     dbt_output = convert_ssis_to_dbt(ssis_content, store_procedures_content, database_schema_content)
     print("Uploading dbt models to GCS")
-    
+    cleaned_json = clean_ai_response(dbt_output)
     upload_files_to_gcs(bucket_name, dbt_output, parent_dir)
     
-    return "200 OK"
+    return cleaned_json
     
 
-if __name__ == "__main__":
-    main()
