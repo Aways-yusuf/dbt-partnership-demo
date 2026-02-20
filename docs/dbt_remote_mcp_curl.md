@@ -278,8 +278,17 @@ python scripts/dbt_mcp_call.py execute_sql $'{"sql": "SELECT id\nFROM my_table\n
 
 
 ```bash
+Steps
+DBT MCP remote Curl command
 
-DBT remote command, MCP Curl command
+export DBT_MCP_URL="https://yh400.us1.dbt.com/api/ai/v1/mcp/"
+export DBT_MCP_AUTH="Bearer " 
+export DBT_PROD_ENV_ID="70471823520349"    
+export DBT_USER_ID="70471823501502"                    
+export DBT_DEV_ENV_ID="70471823519177"  
+
+cd /Users/gaurav/Downloads/DBT/DBT-MCP/dbt-partnership-demo/
+
 
 python3 scripts/dbt_mcp_call.py get_all_models
 python3 scripts/dbt_mcp_call.py get_all_macros
