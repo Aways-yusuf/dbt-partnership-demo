@@ -36,7 +36,7 @@ That error means the server returned **non-JSON** (usually an HTML error page). 
 # Copy these from the "dbt-mcp-remote" -> "headers" section of mcp.json
 # Use the Authorization value exactly as in mcp.json (it usually already includes "Bearer ")
 export DBT_MCP_URL="https://yh400.us1.dbt.com/api/ai/v1/mcp/"
-export DBT_MCP_AUTH="Bearer " 
+export DBT_MCP_AUTH="Bearer dbtu_GhXMfi4aaPoRfnKunbrtpcjkjRjbAQKvEdGpsubAZe3i3zImgo" 
 export DBT_PROD_ENV_ID="70471823520349"    
 export DBT_USER_ID="70471823501502"                    
 export DBT_DEV_ENV_ID="70471823519177"     
@@ -279,7 +279,7 @@ python scripts/dbt_mcp_call.py execute_sql $'{"sql": "SELECT id\nFROM my_table\n
 
 ```bash
 
-Commands to run
+DBT remote command, MCP Curl command
 
 python3 scripts/dbt_mcp_call.py get_all_models
 python3 scripts/dbt_mcp_call.py get_all_macros
@@ -289,5 +289,14 @@ python3 scripts/dbt_mcp_call.py get_model_parents '{"name": "fct_transaction"}'
 python3 scripts/dbt_mcp_call.py get_lineage '{"unique_id": "model.dbt_partnership_demo.fct_purchase"}'
 python3 scripts/dbt_mcp_call.py execute_sql '{"sql": "SELECT * FROM dbt_target.fct_purchase LIMIT 5"}'
 
+
+DBT Local commands
+
+get_lineage of fct_order
+list
+run
+test
+list_job_runs
+get_job_run_details 70471866414705
 
 ```
