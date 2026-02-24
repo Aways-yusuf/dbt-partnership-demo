@@ -1,8 +1,27 @@
 -- Intermediate: City + State Province + Country (point-in-time). Replaces GetCityUpdates temporal logic.
 {{ config(materialized='view') }}
-with cities as (select * from {{ ref('stg_application__cities') }}),
-     state_provinces as (select * from {{ ref('stg_application__state_provinces') }}),
-     countries as (select * from {{ ref('stg_application__countries') }}),
+with cities as (select * from {{ ref('stg_city') }}),
+     state_provinces as (
+         select
+             stateprovinceid as state_province_id,
+             stateprovincename as state_province,
+             countryid as country_id,
+             salesterritory as sales_territory,
+             safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as valid_from,
+             safe_cast(substr(cast(validto as string), 1, 26) as timestamp) as valid_to
+         from {{ source('wwi_oltp', 'StateProvinces') }}
+     ),
+     countries as (
+         select
+             countryid as country_id,
+             countryname as country,
+             continent,
+             region,
+             subregion,
+             safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as valid_from,
+             safe_cast(substr(cast(validto as string), 1, 26) as timestamp) as valid_to
+         from {{ source('wwi_oltp', 'Countries') }}
+     ),
 city_sp as (
     select c.wwi_city_id, c.city, c.state_province_id, c.location, c.latest_recorded_population, c.valid_from, c.valid_to,
            sp.state_province, sp.country_id, sp.sales_territory

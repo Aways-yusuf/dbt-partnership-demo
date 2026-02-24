@@ -5,7 +5,7 @@
     incremental_strategy='merge'
 ) }}
 with city_joined as (
-    select * from {{ ref('int_city__joined') }}
+    select * from {{ ref('int_city') }}
     {% if is_incremental() %}
     where valid_from > (select coalesce(max(valid_from), timestamp('1900-01-01')) from {{ this }})
     {% endif %}

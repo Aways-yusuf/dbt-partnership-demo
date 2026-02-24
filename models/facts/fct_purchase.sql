@@ -1,6 +1,6 @@
 -- Fact Purchase. Replaces MigrateStagedPurchaseData → Fact.Purchase.
 {{ config(materialized='table') }}
-with stg_base as (select * from {{ ref('stg_purchasing__purchase_order_lines') }}),
+with stg_base as (select * from {{ ref('int_purchase') }}),
      stg as (
        select *, row_number() over (order by wwi_purchase_order_id, wwi_stock_item_id, orderedouters, last_modified_when) as _row_id
        from stg_base

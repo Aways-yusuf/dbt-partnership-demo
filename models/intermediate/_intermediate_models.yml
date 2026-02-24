@@ -1,17 +1,34 @@
-# Intermediate: joined / unioned staging for dimensions and facts
+# Intermediate: joined / pass-through from staging for dimensions and facts
 version: 2
 models:
-  - name: int_city__joined
+  - name: int_city
     description: |
       Cities joined with StateProvinces and Countries for Dimension.City.
       Adds valid_from/valid_to for SCD2.
-  - name: int_customer__joined
+  - name: int_customer
     description: |
       Customers with SCD2 validity (valid_from, valid_to) for Dimension.Customer.
-  - name: int_supplier__joined
+  - name: int_employee
+    description: Employee (pass-through from stg_employee).
+  - name: int_movement
+    description: Movement (pass-through from stg_movement).
+  - name: int_order
+    description: Order (pass-through from stg_order).
+  - name: int_payment_method
+    description: Payment Method (pass-through from stg_payment_method).
+  - name: int_purchase
+    description: Purchase (pass-through from stg_purchase).
+  - name: int_sale
+    description: Sale (pass-through from stg_sale).
+  - name: int_stock_holding
+    description: Stock Holding (pass-through from stg_stock_holding).
+  - name: int_stock_item
+    description: Stock Item (pass-through from stg_stock_item).
+  - name: int_supplier
     description: |
       Suppliers with SCD2 validity for Dimension.Supplier.
-  - name: int_transaction__union
+  - name: int_transaction
     description: |
       Union of CustomerTransactions and SupplierTransactions for Fact.Transaction.
-      Columns aligned (customer vs supplier IDs null where not applicable).
+  - name: int_transaction_type
+    description: Transaction Type (pass-through from stg_transaction_type).

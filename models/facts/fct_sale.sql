@@ -1,6 +1,6 @@
 -- Fact Sale. Replaces MigrateStagedSaleData → Fact.Sale.
 {{ config(materialized='table') }}
-with stg_base as (select * from {{ ref('stg_sales__invoice_lines') }}),
+with stg_base as (select * from {{ ref('int_sale') }}),
      stg as (
        select *, row_number() over (order by wwi_invoice_id, wwi_stock_item_id, quantity, last_modified_when) as _row_id
        from stg_base

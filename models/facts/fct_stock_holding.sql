@@ -1,6 +1,6 @@
 -- Fact Stock Holding. Replaces MigrateStagedStockHoldingData → Fact.Stock Holding.
 {{ config(materialized='table') }}
-with stg_base as (select * from {{ ref('stg_warehouse__stock_item_holdings') }}),
+with stg_base as (select * from {{ ref('int_stock_holding') }}),
      stg as (
        select *, row_number() over (order by wwi_stock_item_id, quantity_on_hand, binlocation, last_stocktake_quantity) as _row_id
        from stg_base
