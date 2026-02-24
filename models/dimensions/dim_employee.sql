@@ -1,6 +1,6 @@
 -- Dimension Employee (SCD2). Replaces MigrateStagedEmployeeData → Dimension.Employee.
 {{ config(materialized='table') }}
-with people as (select * from {{ ref('stg_application__people') }}),
+with people as (select * from {{ ref('int_employee') }}),
 with_valid_to as (
     select wwi_employee_id, employee, preferredname as preferred_name, validfrom as valid_from,
            coalesce(lead(validfrom) over (partition by wwi_employee_id order by validfrom), timestamp('9999-12-31 23:59:59.999999')) as valid_to

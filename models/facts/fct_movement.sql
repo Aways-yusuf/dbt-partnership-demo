@@ -1,6 +1,6 @@
 -- Fact Movement. Replaces MigrateStagedMovementData → Fact.Movement.
 {{ config(materialized='table') }}
-with stg as (select * from {{ ref('stg_warehouse__stock_item_transactions') }}),
+with stg as (select * from {{ ref('int_movement') }}),
      dsi as (select * from {{ ref('dim_stock_item') }}),
      dcu as (select * from {{ ref('dim_customer') }}),
      dsu as (select * from {{ ref('dim_supplier') }}),
