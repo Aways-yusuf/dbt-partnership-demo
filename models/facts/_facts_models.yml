@@ -142,7 +142,7 @@ unit_tests:
       expect one fact row with supplier_key=1, stock_item_key=1.
     model: fct_purchase
     given:
-      - input: ref('stg_purchasing__purchase_order_lines')
+      - input: ref('int_purchase')
         rows:
           - date_key: 2024-06-01
             wwi_supplier_id: 1

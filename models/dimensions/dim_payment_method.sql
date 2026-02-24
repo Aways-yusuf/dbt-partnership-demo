@@ -1,6 +1,6 @@
 -- Dimension Payment Method (SCD2). Replaces MigrateStagedPaymentMethodData → Dimension.Payment Method.
 {{ config(materialized='table') }}
-with pm as (select * from {{ ref('stg_application__payment_methods') }}),
+with pm as (select * from {{ ref('int_payment_method') }}),
 with_valid_to as (
     select wwi_payment_method_id, payment_method, validfrom as valid_from,
            coalesce(lead(validfrom) over (partition by wwi_payment_method_id order by validfrom), timestamp('9999-12-31 23:59:59.999999')) as valid_to

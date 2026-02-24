@@ -1,6 +1,6 @@
 -- Fact Transaction. Replaces MigrateStagedTransactionData → Fact.Transaction.
 {{ config(materialized='table') }}
-with stg_base as (select * from {{ ref('int_transaction__union') }}),
+with stg_base as (select * from {{ ref('int_transaction') }}),
      stg as (
        select *, row_number() over (order by wwi_customer_transaction_id, wwi_supplier_transaction_id, last_modified_when) as _row_id
        from stg_base

@@ -2,7 +2,7 @@
 -- Replaces GetSupplierUpdates logic: SCD Type 2 with Category and Primary Contact from lookups.
 -- Dependency: Stock Item (load order only; Supplier runs after Stock Item in SSIS).
 {{ config(materialized='view') }}
-with suppliers as (select * from {{ ref('stg_purchasing__suppliers') }}),
+with suppliers as (select * from {{ ref('stg_supplier') }}),
      categories as (
          select safe_cast(suppliercategoryid as int64) as suppliercategoryid, suppliercategoryname ,
                 safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as valid_from, safe_cast(substr(cast(validto as string), 1, 26) as timestamp) as valid_to

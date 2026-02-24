@@ -1,6 +1,6 @@
 -- Dimension Stock Item (SCD2). Replaces MigrateStagedStockItemData → Dimension.Stock Item.
 {{ config(materialized='table') }}
-with si as (select * from {{ ref('stg_warehouse__stock_items') }}),
+with si as (select * from {{ ref('int_stock_item') }}),
 with_valid_to as (
     select wwi_stock_item_id, stock_item, brand, size, leadtimedays as lead_time_days, quantityperouter as quantity_per_outer, 
     ischillerstock as is_chiller_stock, taxrate as tax_rate, unitprice as unit_price, typicalweightperunit as typical_weight_per_unit, 

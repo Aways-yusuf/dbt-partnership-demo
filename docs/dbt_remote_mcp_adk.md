@@ -262,8 +262,8 @@ adk web --port 8000
 Local and Remote ADK Commands
 
 get_all_models
-get details about dbt sources
 get_lineage of model.dbt_partnership_demo.fct_purchase
+get details about dbt sources
 get_model_details of fct_purchase
 get_all_macros
 last run status of dim_city
