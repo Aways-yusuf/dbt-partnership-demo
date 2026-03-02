@@ -1,0 +1,11 @@
+# dbt remote MCP server (Streamable HTTP) - from your mcp.json
+DBT_MCP_URL=https://yh400.us1.dbt.com/api/ai/v1/mcp/
+DBT_API_TOKEN=
+DBT_PROD_ENVIRONMENT_ID=70471823520349
+DBT_DEV_ENVIRONMENT_ID=70471823519177
+DBT_USER_ID=70471823501502
+# Gemini API key (required for ADK LlmAgent) - get from https://aistudio.google.com/app/apikey
+GOOGLE_GENAI_USE_VERTEXAI=True
+GOOGLE_CLOUD_PROJECT=data-platforms-66d-demos
+GOOGLE_CLOUD_LOCATION=us-central1
+DEVELOPMENT=True
