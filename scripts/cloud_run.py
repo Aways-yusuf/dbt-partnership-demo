@@ -73,9 +73,33 @@ def convert_ssis_to_dbt(ssis_content, store_procedures_content, database_schema_
     model = GenerativeModel(MODEL_NAME)
 
     prompt = f"""
-You are a senior Data Engineer specializing in converting SSIS packages into dbt models for BigQuery.
+You are a senior and a deterministic Data Engineer specializing in converting SSIS packages into dbt models for BigQuery.
 Your task:
 Convert the provided SSIS package XML and SQL stored procedures into a complete dbt project structure.
+
+DETERMINISTIC EXECUTION RULES
+1. Output must be COMPLETELY DETERMINISTIC.
+2. For identical inputs, the output structure, filenames, ordering, and formatting MUST be identical.
+3. Do NOT infer optional models.
+4. Do NOT create extra helper models.
+5. Do NOT skip detected entities.
+6. One entity = exactly: - 1 staging model\n - 1 intermediate model\n - 1 final model (dimension OR fact)
+7. File names must use ONLY the exact source table name in lowercase snake_case.
+8. Sort all generated files alphabetically by filepath before returning JSON.
+9. Sort columns alphabetically inside every SELECT statement.
+10. Use consistent indentation (2 spaces).
+11. Do NOT add timestamps, random aliases, or variable suffixes.
+12. Do NOT pluralize or singularize names. Use exact detected table names.
+13. If no primary key exists, use the first column alphabetically as deterministic key.
+14. If entity type cannot be determined, classify as dimension.
+15. Don't need date models
+15. Do NOT change naming conventions across runs
+16 DO NOT create additional models in different runs.
+17 DO NOT rename models in different runs.
+18 DO NOT invent alternative naming patterns.
+
+
+
 STRICT OUTPUT RULES:
 1. Return ONLY valid JSON.
 2. Do NOT include explanations.
@@ -85,14 +109,40 @@ STRICT OUTPUT RULES:
 6. Each key must be the full filepath.
 7. Each value must contain the full file content as a string.
 
+REQUIRED PROJECT STRUCTURE (NO DEVIATION ALLOWED):
+models/staging/stg_<entity_name>.sql
+models/intermediate/int_<entity_name>.sql
+models/dimensions/dim_<entity_name>.sql (if dimension)
+models/facts/fct_<entity_name>.sql (if fact)
+models/dimensions/schema.yml
+models/facts/schema.yml
+models/sources.yml
+macros/generate_schema_name.sql
+
+MACRO REQUIRED - Create this exact file (macros/generate_schema_name.sql):
+Use +schema from dbt_project (e.g. dbt_staging for staging/intermediate, dbt_target for dimensions/facts).
+Only fall back to target.schema when no custom schema is set.
+Include the following macro verbatim in macros/generate_schema_name.sql:
+
+{{# Use +schema from dbt_project (dbt_staging for staging/intermediate, dbt_target for dimensions/facts).
+   Only fall back to target.schema when no custom schema is set. #}}
+{{% macro generate_schema_name(custom_schema_name, node) -%}}
+    {{%- set default_schema = target.schema -%}}
+    {{%- if custom_schema_name is not none and custom_schema_name | trim != '' -%}}
+        {{{{ custom_schema_name | trim }}}}
+    {{%- else -%}}
+        {{{{ default_schema }}}}
+    {{%- endif -%}}
+{{%- endmacro %}}
+
 JSON FORMAT REQUIRED:
 {{
-  "models/staging/stg_cities.sql": "file content here",
-  "models/intermediate/int_city_prep.sql": "file content here",
-  "models/dimensions/dim_city.sql": "file content here",
-  "models/dimensions/schema.yml": "file content here",
+  "models/staging/file_name.sql": "file content here",
+  "models/intermediate/file_name.sql": "file content here",
+  "models/dimensions/file_name.sql": "file content here",
   "models/sources.yml": "file content here",
-  "models/facts/fact_sale.sql": "file content here"
+  "models/facts/file_name.sql": "file content here"
+  "macros/generate_schema_name.sql": "file content here"
 }}
 
 ARCHITECTURE REQUIREMENTS:
