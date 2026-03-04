@@ -15,8 +15,8 @@ with stg_base as (select * from {{ ref('int_stock_holding') }}),
        from stg
        left join dsi
          on {{ cross_db_safe_cast_int('dsi.wwi_stock_item_id') }} = {{ cross_db_safe_cast_int('stg.wwi_stock_item_id') }}
-         and current_timestamp() > dsi.valid_from
-         and current_timestamp() <= dsi.valid_to
+         and {{ cross_db_current_timestamp() }} > dsi.valid_from
+         and {{ cross_db_current_timestamp() }} <= dsi.valid_to
      )
 
 select

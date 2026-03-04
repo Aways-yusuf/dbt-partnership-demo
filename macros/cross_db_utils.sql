@@ -65,3 +65,12 @@
     cast(null as text)
   {%- endif -%}
 {% endmacro %}
+
+{# Postgres: current_timestamp (no parens). BigQuery: current_timestamp() #}
+{% macro cross_db_current_timestamp() %}
+  {%- if target.type == 'bigquery' -%}
+    current_timestamp()
+  {%- else -%}
+    current_timestamp
+  {%- endif -%}
+{% endmacro %}

@@ -29,7 +29,11 @@ with_key as (
 )
 select
     {% if is_incremental() %}
-    (select coalesce(max(city_key), 0) from {{ this }}) + rn as city_key,
+    {% if target.type == 'bigquery' %}
+    cast((select coalesce(max(city_key), 0) from {{ this }}) + rn as int64) as city_key,
+    {% else %}
+    ((select coalesce(max(city_key), 0) from {{ this }}) + rn)::integer as city_key,
+    {% endif %}
     {% else %}
     rn as city_key,
     {% endif %}
