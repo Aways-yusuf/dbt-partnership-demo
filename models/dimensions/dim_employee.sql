@@ -3,7 +3,7 @@
 with people as (select * from {{ ref('int_employee') }}),
 with_valid_to as (
     select wwi_employee_id, employee, preferredname as preferred_name, validfrom as valid_from,
-           coalesce(lead(validfrom) over (partition by wwi_employee_id order by validfrom), timestamp('9999-12-31 23:59:59.999999')) as valid_to
+           coalesce(lead(validfrom) over (partition by wwi_employee_id order by validfrom), {{ cross_db_timestamp_max() }}) as valid_to
     from people
 )
 select row_number() over (order by wwi_employee_id, valid_from) as employee_key,

@@ -7,7 +7,7 @@
 with city_joined as (
     select * from {{ ref('int_city') }}
     {% if is_incremental() %}
-    where valid_from > (select coalesce(max(valid_from), timestamp('1900-01-01')) from {{ this }})
+    where valid_from > (select coalesce(max(valid_from), {{ cross_db_timestamp_min() }}) from {{ this }})
     {% endif %}
 ),
 with_key as (

@@ -4,12 +4,12 @@
 {{ config(materialized='view') }}
 with suppliers as (select * from {{ ref('stg_supplier') }}),
      categories as (
-         select safe_cast(suppliercategoryid as int64) as suppliercategoryid, suppliercategoryname ,
-                safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as valid_from, safe_cast(substr(cast(validto as string), 1, 26) as timestamp) as valid_to
+         select {{ cross_db_safe_cast_int('suppliercategoryid') }} as suppliercategoryid, suppliercategoryname ,
+                {{ cross_db_cast_timestamp('validfrom') }} as valid_from, {{ cross_db_cast_timestamp('validto') }} as valid_to
          from {{ source('wwi_oltp', 'SupplierCategories') }}
      ),
      people as (
-         select safe_cast(personid as int64) as personid, fullname as fullname
+         select {{ cross_db_safe_cast_int('personid') }} as personid, fullname as fullname
          from {{ source('wwi_oltp', 'People') }}
      ),
 supplier_enriched as (
@@ -38,7 +38,7 @@ with_valid_to as (
         payment_days,
         postal_code,
         valid_from as valid_from,
-        coalesce(lead(valid_from) over (partition by wwi_supplier_id order by valid_from), timestamp('9999-12-31 23:59:59.999999')) as valid_to
+        coalesce(lead(valid_from) over (partition by wwi_supplier_id order by valid_from), {{ cross_db_timestamp_max() }}) as valid_to
     from supplier_enriched
 )
 select * from with_valid_to

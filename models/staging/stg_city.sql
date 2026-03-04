@@ -9,9 +9,9 @@ renamed as (
         cityname as city,
         stateprovinceid as state_province_id,
         location,
-        coalesce(safe_cast(latestrecordedpopulation as int64), 0) as latest_recorded_population,
-        safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as valid_from,
-        safe_cast(substr(cast(validto as string), 1, 26) as timestamp) as valid_to
+        {{ cross_db_safe_cast_int_coalesce('latestrecordedpopulation', 0) }} as latest_recorded_population,
+        {{ cross_db_cast_timestamp('validfrom') }} as valid_from,
+        {{ cross_db_cast_timestamp('validto') }} as valid_to
     from source
 )
 select * from renamed

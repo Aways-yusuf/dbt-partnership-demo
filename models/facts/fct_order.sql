@@ -14,7 +14,7 @@ with stg as (select * from {{ ref('int_order') }}),
          row_number() over (partition by stg.wwi_order_id, stg.wwi_backorder_id order by dc.valid_from desc) as rn
        from stg
        left join dc
-         on safe_cast(dc.wwi_city_id as int64) = safe_cast(stg.wwi_city_id as int64)
+         on {{ cross_db_safe_cast_int('dc.wwi_city_id') }} = {{ cross_db_safe_cast_int('stg.wwi_city_id') }}
          and stg.last_modified_when > dc.valid_from
          and stg.last_modified_when <= dc.valid_to
      ),
@@ -26,7 +26,7 @@ with stg as (select * from {{ ref('int_order') }}),
          row_number() over (partition by stg.wwi_order_id, stg.wwi_backorder_id order by dcu.valid_from desc) as rn
        from stg
        left join dcu
-         on safe_cast(dcu.wwi_customer_id as int64) = safe_cast(stg.wwi_customer_id as int64)
+         on {{ cross_db_safe_cast_int('dcu.wwi_customer_id') }} = {{ cross_db_safe_cast_int('stg.wwi_customer_id') }}
          and stg.last_modified_when > dcu.valid_from
          and stg.last_modified_when <= dcu.valid_to
      ),
@@ -38,7 +38,7 @@ with stg as (select * from {{ ref('int_order') }}),
          row_number() over (partition by stg.wwi_order_id, stg.wwi_backorder_id order by dsi.valid_from desc) as rn
        from stg
        left join dsi
-         on safe_cast(dsi.wwi_stock_item_id as int64) = safe_cast(stg.wwi_stock_item_id as int64)
+         on {{ cross_db_safe_cast_int('dsi.wwi_stock_item_id') }} = {{ cross_db_safe_cast_int('stg.wwi_stock_item_id') }}
          and stg.last_modified_when > dsi.valid_from
          and stg.last_modified_when <= dsi.valid_to
      ),
@@ -50,7 +50,7 @@ with stg as (select * from {{ ref('int_order') }}),
          row_number() over (partition by stg.wwi_order_id, stg.wwi_backorder_id order by de.valid_from desc) as rn
        from stg
        left join de
-         on safe_cast(de.wwi_employee_id as int64) = safe_cast(stg.wwi_salesperson_id as int64)
+         on {{ cross_db_safe_cast_int('de.wwi_employee_id') }} = {{ cross_db_safe_cast_int('stg.wwi_salesperson_id') }}
          and stg.last_modified_when > de.valid_from
          and stg.last_modified_when <= de.valid_to
      ),
@@ -62,7 +62,7 @@ with stg as (select * from {{ ref('int_order') }}),
          row_number() over (partition by stg.wwi_order_id, stg.wwi_backorder_id order by de.valid_from desc) as rn
        from stg
        left join de
-         on safe_cast(de.wwi_employee_id as int64) = safe_cast(stg.wwi_picker_id as int64)
+         on {{ cross_db_safe_cast_int('de.wwi_employee_id') }} = {{ cross_db_safe_cast_int('stg.wwi_picker_id') }}
          and stg.last_modified_when > de.valid_from
          and stg.last_modified_when <= de.valid_to
      )

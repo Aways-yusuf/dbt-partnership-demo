@@ -7,8 +7,8 @@ renamed as (
     select
         transactiontypeid as wwi_transaction_type_id,
         transactiontypename as transaction_type,
-        safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as validfrom,
-        safe_cast(substr(cast(validto as string), 1, 26) as timestamp) as validto
+        {{ cross_db_cast_timestamp('validfrom') }} as validfrom,
+        {{ cross_db_cast_timestamp('validto') }} as validto
     from source
 )
 select * from renamed

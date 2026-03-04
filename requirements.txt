@@ -1,1 +1,8 @@
-dbt-bigquery>=1.7.0,<3.0.0
+# Pin dbt-core <1.8 to avoid "list_relations_schemas not yet implemented" panic when using Postgres/AlloyDB.
+dbt-core>=1.7.0,<1.8.0
+
+# BigQuery (default warehouse)
+dbt-bigquery>=1.7.0,<2.0.0
+
+# AlloyDB (optional: use --target alloydb_dev or alloydb_dev_iam)
+dbt-postgres>=1.6.0,<1.8.0

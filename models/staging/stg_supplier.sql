@@ -5,15 +5,15 @@ with source as (
 ),
 renamed as (
     select
-        safe_cast(supplierid as int64) as wwi_supplier_id,
+        {{ cross_db_safe_cast_int('supplierid') }} as wwi_supplier_id,
         suppliername as supplier,
-        safe_cast(suppliercategoryid as int64) as suppliercategoryid,
-        safe_cast(primarycontactpersonid as int64) as primarycontactpersonid,
+        {{ cross_db_safe_cast_int('suppliercategoryid') }} as suppliercategoryid,
+        {{ cross_db_safe_cast_int('primarycontactpersonid') }} as primarycontactpersonid,
         supplierreference as supplier_reference,
         paymentdays as payment_days,
         deliverypostalcode as postal_code,
-        safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as valid_from,
-        safe_cast(substr(cast(validto as string), 1, 26) as timestamp) as valid_to
+        {{ cross_db_cast_timestamp('validfrom') }} as valid_from,
+        {{ cross_db_cast_timestamp('validto') }} as valid_to
     from source
 )
 select * from renamed

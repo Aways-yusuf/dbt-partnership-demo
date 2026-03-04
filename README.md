@@ -1,6 +1,8 @@
-# dbt-partnership-demo – WWI on BigQuery
+# dbt-partnership-demo – WWI on BigQuery and AlloyDB
 
 dbt project that replicates the **Wide World Importers** data warehouse pipeline from the legacy **SSIS DailyETLMain.dtsx** package. All 13 entities are implemented with the same logic, transformations, and structural patterns as the SSIS/DTSX packages.
+
+**Warehouses:** The project runs on **BigQuery** (default) and optionally on **AlloyDB**. Use `--target dev` for BigQuery or `--target alloydb_dev` for AlloyDB. See [AlloyDB setup](#alloydb-optional) below.
 
 ## Entities (SSIS → dbt)
 
@@ -31,10 +33,113 @@ dbt project that replicates the **Wide World Importers** data warehouse pipeline
 
 ## Setup
 
-1. Install: `pip install -r requirements.txt`
+### BigQuery (default)
+
+1. Install: `pip install -r requirements.txt` (includes `dbt-bigquery`; add `dbt-postgres` if you also want AlloyDB).
 2. Set env: `BQ_PROJECT`, `WWI_SOURCE_DATASET`, `WWI_DW_DATASET`
-3. Align `models/sources.yml` with your replicated OLTP table identifiers
-4. Run: `dbt debug` then `dbt run`
+3. Align `models/sources.yml` with your replicated OLTP table identifiers (database/schema for your BQ project/dataset).
+4. Run: `dbt debug` then `dbt run` (uses target `dev` = BigQuery).
+
+### AlloyDB (optional)
+
+You can run the **same project** against AlloyDB so that all dbt models are built in AlloyDB (e.g. for a copy of the warehouse or for migration).
+
+1. Install the Postgres adapter: `pip install dbt-postgres` (already listed in `requirements.txt`).
+2. In `profiles.yml`, the targets `alloydb_dev` and `alloydb_prod` are configured. Set environment variables (or override in the profile):
+   - `ALLOYDB_HOST` – AlloyDB instance host (e.g. from AlloyDB connection name).
+   - `ALLOYDB_PORT` – usually `5432`.
+   - `ALLOYDB_USER` – database user.
+   - `ALLOYDB_PASSWORD` – password (or use IAM if supported).
+   - `ALLOYDB_DATABASE` – database name (e.g. `wide_world_importers`).
+3. Ensure the same OLTP source data is available in AlloyDB (replicate from your source or from BigQuery). Point the **sources** in `models/sources.yml` to the AlloyDB database/schema when running with `--target alloydb_*` (sources use `database` and `schema`; for Postgres/AlloyDB these map to the DB and schema containing your tables).
+4. Run against AlloyDB:
+   - `dbt debug --target alloydb_dev`
+   - `dbt run --target alloydb_dev`
+   - `dbt build --target alloydb_prod` for production.
+
+**If you see:** `panic: not yet implemented: PostgreSQL's list_relations_schemas` — the Rust adapter in dbt 1.8+ doesn't implement this for Postgres. **Fix:** pin both `dbt-core` and `dbt-postgres` to &lt; 1.8 (see `requirements.txt`), then reinstall so nothing is 1.8+:
+
+  ```bash
+  pip uninstall dbt-core dbt-postgres dbt-bigquery -y
+  pip install -r requirements.txt
+  ```
+
+  Confirm versions (all should be 1.7.x or 1.6.x, not 1.8+):
+
+  ```bash
+  pip show dbt-core dbt-postgres
+  ```
+
+  Then run again: `dbt run --target alloydb_dev_iam`.
+
+#### AlloyDB with IAM (OAuth)
+
+To use IAM instead of a static password (token as password), do the following.
+
+**1. Enable IAM authentication on the AlloyDB instance**
+
+- In Google Cloud Console: AlloyDB → your instance → Edit → Database flags → add `alloydb.iam_authentication` = `on` (or set it via [Configure database flags](https://cloud.google.com/alloydb/docs/instance-configure-database-flags)).
+
+**2. Grant IAM roles to the user or service account**
+
+The principal (your user or service account) needs:
+
+- `alloydb.databaseUser` – connect to the instance
+- `serviceusage.serviceUsageConsumer` – permission-checking APIs
+
+Console: IAM & Admin → select principal → Grant access → add role **AlloyDB Database User** (and ensure Service Usage Consumer is present).  
+Or with gcloud: [Grant access to other users](https://cloud.google.com/alloydb/docs/user-grant-access).
+
+**3. Create the IAM database user on the cluster**
+
+- **Console:** AlloyDB → Clusters → your cluster → **Users** → **Add user account** → **Cloud IAM** → enter principal (see username format below) → Add.
+- **gcloud:** Replace `USERNAME`, `CLUSTER`, `REGION` (e.g. `us-central1`):
+
+  ```bash
+  gcloud alloydb users create USERNAME \
+    --cluster=CLUSTER \
+    --region=REGION \
+    --type=IAM_BASED
+  ```
+
+  **USERNAME format:**  
+  - IAM user: full email (e.g. `you@company.com`).  
+  - Service account: email **without** `.gserviceaccount.com` (e.g. `my-sa@my-project.iam`).
+
+**4. Grant DB privileges (optional)**
+
+Connect as `postgres` and grant access to objects the IAM user needs (e.g. for dbt: schema/database access). Example:
+
+```sql
+GRANT USAGE ON SCHEMA dbt_target TO "you@company.com";
+GRANT CREATE ON SCHEMA dbt_target TO "you@company.com";
+-- grant on source schema/tables as needed
+```
+
+**5. Set the username in `profiles.yml`**
+
+Under `alloydb_dev_iam` (and `alloydb_prod_iam` if used), set `user` to the same value you used as USERNAME in step 3 (e.g. `you@company.com` or `my-sa@my-project.iam`).
+
+**6. Get a token and run dbt**
+
+In the same terminal where you run dbt:
+
+```bash
+# Use your current gcloud user/application-default credentials
+export PGPASSWORD=$(gcloud auth print-access-token)
+
+# Optional: restrict token to AlloyDB only
+# export PGPASSWORD=$(gcloud auth application-default print-access-token --scopes=https://www.googleapis.com/auth/alloydb.login)
+
+dbt debug --target alloydb_dev_iam
+dbt run --target alloydb_dev_iam
+```
+
+Tokens expire; if a run fails with auth errors, run `export PGPASSWORD=$(gcloud auth print-access-token)` again and retry.
+
+---
+
+**Summary:** BigQuery remains the default (`dev` / `prod`). Use `--target alloydb_dev` or `--target alloydb_prod` to build the same models in AlloyDB. Use `--target alloydb_dev_iam` (and step 6 above) for IAM/OAuth. The project uses cross-database macros in `macros/cross_db_utils.sql` so one codebase compiles to both BigQuery and Postgres/AlloyDB SQL.
 
 ## Run order
 

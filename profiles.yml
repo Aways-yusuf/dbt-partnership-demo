@@ -1,6 +1,10 @@
+# Run against BigQuery (default):  dbt run --target dev
+# Run against AlloyDB:             dbt run --target alloydb_dev
+# Requires dbt-bigquery for BQ; dbt-postgres for AlloyDB (see requirements.txt).
 dbt_partnership_demo:
   target: dev
   outputs:
+    # --- BigQuery (default) ---
     dev:
       type: bigquery
       method: oauth
@@ -15,3 +19,50 @@ dbt_partnership_demo:
       dataset: dbt_target
       threads: 8
       timeout_seconds: 600
+    # --- AlloyDB (Postgres-compatible; use dbt-postgres adapter) ---
+    # Password-based (user/password in AlloyDB):
+    alloydb_dev:
+      type: postgres
+      host: "35.224.103.243"
+      port: 5432
+      user: "gp797"
+      password: "gp797"
+      dbname: "analytics"
+      schema: dbt_target
+      threads: 8
+      connect_timeout: 10
+    alloydb_prod:
+      type: postgres
+      host: "35.224.103.243"
+      port: 5432
+      user: "postgres"
+      password: ""
+      dbname: "postgres"
+      schema: dbt_target
+      threads: 8
+      connect_timeout: 10
+    # --- AlloyDB with IAM / OAuth (token as password) ---
+    # 1. Create IAM DB user in AlloyDB (see Cloud docs: Manage IAM authentication).
+    # 2. user = IAM email (e.g. you@company.com) or service account without .gserviceaccount.com.
+    # 3. Before dbt: export PGPASSWORD=$(gcloud auth print-access-token)
+    # 4. Run: dbt run --target alloydb_dev_iam
+    alloydb_dev_iam:
+      type: postgres
+      host: "35.224.103.243"
+      port: 5432
+      user: "gaurav.poojary@66degrees.com"
+      password: "{{ env_var('PGPASSWORD', '') }}"
+      dbname: "analytics"
+      schema: dbt_target
+      threads: 8
+      connect_timeout: 10
+    alloydb_prod_iam:
+      type: postgres
+      host: "35.224.103.243"
+      port: 5432
+      user: "gaurav.poojary@66degrees.com"
+      password: "{{ env_var('PGPASSWORD', '') }}"
+      dbname: "analytics"
+      schema: dbt_target
+      threads: 8
+      connect_timeout: 10
