@@ -1,9 +1,18 @@
 -- Dimension City (SCD2). Replaces MigrateStagedCityData → Dimension.City.
+-- Postgres: delete+insert avoids merge code path that can emit literal "NULL" for integers.
+{% if target.type == 'bigquery' %}
 {{ config(
     materialized='incremental',
     unique_key=['wwi_city_id', 'valid_from'],
     incremental_strategy='merge'
 ) }}
+{% else %}
+{{ config(
+    materialized='incremental',
+    unique_key=['wwi_city_id', 'valid_from'],
+    incremental_strategy='delete+insert'
+) }}
+{% endif %}
 with city_joined as (
     select * from {{ ref('int_city') }}
     {% if is_incremental() %}
@@ -37,7 +46,11 @@ select
     {% else %}
     rn as city_key,
     {% endif %}
+    {% if target.type == 'bigquery' %}
     wwi_city_id,
+    {% else %}
+    (case when wwi_city_id is null or wwi_city_id::text = 'NULL' then 0 else wwi_city_id::integer end) as wwi_city_id,
+    {% endif %}
     city,
     state_province,
     country,
