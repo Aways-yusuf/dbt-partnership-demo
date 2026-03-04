@@ -30,7 +30,11 @@ with_key as (
         region,
         subregion,
         location,
+        {% if target.type == 'bigquery' %}
         coalesce(latest_recorded_population, 0) as latest_recorded_population,
+        {% else %}
+        (case when latest_recorded_population is null or cast(latest_recorded_population as text) = 'NULL' then 0 else cast(latest_recorded_population as integer) end) as latest_recorded_population,
+        {% endif %}
         valid_from,
         valid_to,
         row_number() over (order by wwi_city_id, valid_from) as rn

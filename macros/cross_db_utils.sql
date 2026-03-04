@@ -5,7 +5,7 @@
   {%- if target.type == 'bigquery' -%}
     safe_cast({{ expression }} as int64)
   {%- else -%}
-    cast({{ expression }} as integer)
+    (case when {{ expression }} is null or trim(cast({{ expression }} as text)) = 'NULL' then null else cast({{ expression }} as integer) end)
   {%- endif -%}
 {% endmacro %}
 
@@ -13,7 +13,7 @@
   {%- if target.type == 'bigquery' -%}
     coalesce(safe_cast({{ expression }} as int64), {{ default_val }})
   {%- else -%}
-    coalesce(cast({{ expression }} as integer), {{ default_val }})
+    (case when {{ expression }} is null or trim(cast({{ expression }} as text)) = 'NULL' or trim(cast({{ expression }} as text)) = '' then {{ default_val }} else cast({{ expression }} as integer) end)
   {%- endif -%}
 {% endmacro %}
 
