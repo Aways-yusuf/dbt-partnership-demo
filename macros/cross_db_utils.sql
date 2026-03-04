@@ -22,7 +22,7 @@
   {%- if target.type == 'bigquery' -%}
     safe_cast(substr(cast({{ expression }} as string), 1, 26) as timestamp)
   {%- else -%}
-    ({{ expression }})::timestamp
+    (case when {{ expression }} is null or trim(cast({{ expression }} as text)) = 'NULL' or trim(cast({{ expression }} as text)) = '' then null else ({{ expression }})::timestamp end)
   {%- endif -%}
 {% endmacro %}
 
@@ -46,7 +46,7 @@
   {%- if target.type == 'bigquery' -%}
     safe.parse_date({{ format }}, substr(cast({{ expression }} as string), 1, 10))
   {%- else -%}
-    ({{ expression }})::date
+    (case when {{ expression }} is null or trim(cast({{ expression }} as text)) = 'NULL' or trim(cast({{ expression }} as text)) = '' then null else ({{ expression }})::date end)
   {%- endif -%}
 {% endmacro %}
 
