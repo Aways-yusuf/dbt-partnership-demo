@@ -1,11 +1,13 @@
-# Source: WideWorldImporters OLTP replicated to BigQuery (align identifiers to your replication)
+# Source: WideWorldImporters OLTP — BigQuery (project/dataset) or AlloyDB/Postgres (database/schema).
+# For BigQuery: database = project, schema = dataset.
+# For Postgres/AlloyDB: database = DB name, schema = schema (set source_database/source_schema vars in dbt Cloud for AlloyDB env if not postgres/public).
 
 version: 2
 sources:
   - name: wwi_oltp
-    description: WideWorldImporters (WWI) OLTP database replicated to BigQuery. Source for staging and dimensions.
-    database: "data-platforms-66d-demos"
-    schema: dbt_source
+    description: WideWorldImporters (WWI) OLTP. In BigQuery use project/dataset; in AlloyDB use database/schema.
+    database: "{{ 'data-platforms-66d-demos' if target.type == 'bigquery' else var('source_database', 'postgres') }}"
+    schema: "{{ 'dbt_source' if target.type == 'bigquery' else var('source_schema', 'public') }}"
     tables:
       - name: Cities
         description: Application.Cities — city lookup for Dimension.City

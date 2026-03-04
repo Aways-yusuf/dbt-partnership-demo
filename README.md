@@ -57,6 +57,43 @@ You can run the **same project** against AlloyDB so that all dbt models are buil
    - `dbt run --target alloydb_dev`
    - `dbt build --target alloydb_prod` for production.
 
+#### AlloyDB in dbt Cloud
+
+In dbt Cloud, the profile and targets come from the **Connection** and **Environment** you configure in the UI, not from the repo’s `profiles.yml`. So `--target alloydb_dev` fails with “profile 'user' does not have a target named 'alloydb_dev'” because that target only exists in the repo profile.
+
+**Fix: use a separate AlloyDB connection and environment**
+
+1. **Add a PostgreSQL (AlloyDB) connection**
+   - In dbt Cloud: **Project** → **Settings** (gear) → **Connections** (or **Profile**).
+   - Click **Add connection** (or **New connection**).
+   - Choose **PostgreSQL** (AlloyDB is Postgres-compatible).
+   - Set:
+     - **Host:** `35.224.103.243`
+     - **Port:** `5432`
+     - **Database:** your database name (e.g. `postgres`)
+     - **User / Password:** your AlloyDB user and password (or use IAM and token as password if your setup supports it).
+   - Name the connection (e.g. “AlloyDB”) and save.
+
+2. **Create an environment that uses that connection**
+   - **Deploy** → **Environments** → **Create environment**.
+   - **Name:** e.g. “AlloyDB Dev”.
+   - **Connection:** select the AlloyDB connection you created.
+   - **dbt version:** choose a version (e.g. same as your BigQuery env).
+   - Save.
+
+3. **Run dbt against AlloyDB**
+   - **Create a job** (or edit an existing job): **Deploy** → **Jobs** → **Create job** (or pick a job).
+   - Set **Environment** to the AlloyDB environment (e.g. “AlloyDB Dev”).
+   - **Commands:** use `dbt run` (no `--target` needed; the environment’s connection is the target).
+   - Run the job.
+
+4. **Where AlloyDB source tables live**  
+   Sources point to BigQuery when the target is BigQuery, and to Postgres/AlloyDB when the target is Postgres (see `models/sources.yml`). By default the project uses **database** `postgres` and **schema** `public` for AlloyDB. If your WWI source tables are in a different database or schema, set **Environment variables** or **Variables** for the AlloyDB environment in dbt Cloud:
+   - `source_database`: e.g. `postgres` (or your DB name).
+   - `source_schema`: e.g. `public` (or the schema where `People`, `Cities`, etc. live).
+
+So in dbt Cloud you don’t use `--target alloydb_dev`. You run `dbt run` in a job (or IDE) that uses the AlloyDB environment; that environment’s connection is the target.
+
 **If you see:** `panic: not yet implemented: PostgreSQL's list_relations_schemas` — the Rust adapter in dbt 1.8+ doesn't implement this for Postgres. **Fix:** pin both `dbt-core` and `dbt-postgres` to &lt; 1.8 (see `requirements.txt`), then reinstall so nothing is 1.8+:
 
   ```bash
