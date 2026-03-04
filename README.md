@@ -2,7 +2,14 @@
 
 dbt project that replicates the **Wide World Importers** data warehouse pipeline from the legacy **SSIS DailyETLMain.dtsx** package. All 13 entities are implemented with the same logic, transformations, and structural patterns as the SSIS/DTSX packages.
 
-**Warehouses:** The project runs on **BigQuery** (default) and optionally on **AlloyDB**. Use `--target dev` for BigQuery or `--target alloydb_dev` for AlloyDB. See [AlloyDB setup](#alloydb-optional) below.
+**Warehouses:** The project runs on **BigQuery** (default) and on **AlloyDB** (Postgres-compatible). One codebase compiles to both using cross-database macros in `macros/cross_db_utils.sql`.
+
+| Where / target | Command |
+|----------------|--------|
+| BigQuery (default) | `dbt run` or `dbt run --target dev` |
+| AlloyDB (password) | `export DBT_ALLOYDB_PASSWORD='…'` then `dbt run --target alloydb_dev` |
+| AlloyDB (IAM) | `export PGPASSWORD=$(gcloud auth print-access-token)` then `dbt run --target alloydb_dev_iam` |
+| dbt Cloud (Postgres env) | `dbt run` (no `--target`; connection comes from the environment) |
 
 ## Entities (SSIS → dbt)
 
@@ -35,27 +42,25 @@ dbt project that replicates the **Wide World Importers** data warehouse pipeline
 
 ### BigQuery (default)
 
-1. Install: `pip install -r requirements.txt` (includes `dbt-bigquery`; add `dbt-postgres` if you also want AlloyDB).
-2. Set env: `BQ_PROJECT`, `WWI_SOURCE_DATASET`, `WWI_DW_DATASET`
-3. Align `models/sources.yml` with your replicated OLTP table identifiers (database/schema for your BQ project/dataset).
+1. Install: `pip install -r requirements.txt` (includes `dbt-bigquery` and `dbt-postgres`).
+2. Set env as needed: `WWI_SOURCE_DATASET`, `WWI_DW_DATASET` (see `dbt_project.yml` vars).
+3. Align `models/sources.yml` with your BigQuery project/dataset for OLTP sources.
 4. Run: `dbt debug` then `dbt run` (uses target `dev` = BigQuery).
 
-### AlloyDB (optional)
+### AlloyDB (Postgres)
 
-You can run the **same project** against AlloyDB so that all dbt models are built in AlloyDB (e.g. for a copy of the warehouse or for migration).
+The same project runs against AlloyDB. Connection details are in `profiles.yml`; **passwords are not stored there**—use environment variables.
 
-1. Install the Postgres adapter: `pip install dbt-postgres` (already listed in `requirements.txt`).
-2. In `profiles.yml`, the targets `alloydb_dev` and `alloydb_prod` are configured. Set environment variables (or override in the profile):
-   - `ALLOYDB_HOST` – AlloyDB instance host (e.g. from AlloyDB connection name).
-   - `ALLOYDB_PORT` – usually `5432`.
-   - `ALLOYDB_USER` – database user.
-   - `ALLOYDB_PASSWORD` – password (or use IAM if supported).
-   - `ALLOYDB_DATABASE` – database name (e.g. `wide_world_importers`).
-3. Ensure the same OLTP source data is available in AlloyDB (replicate from your source or from BigQuery). Point the **sources** in `models/sources.yml` to the AlloyDB database/schema when running with `--target alloydb_*` (sources use `database` and `schema`; for Postgres/AlloyDB these map to the DB and schema containing your tables).
-4. Run against AlloyDB:
-   - `dbt debug --target alloydb_dev`
-   - `dbt run --target alloydb_dev`
-   - `dbt build --target alloydb_prod` for production.
+1. **Install:** `dbt-postgres` is in `requirements.txt`. Use a **virtual environment** with standard dbt (see [Local CLI and Postgres](#local-cli-and-postgres) below) so you get `dbt-core` and `dbt-postgres` &lt; 1.8 (avoids Postgres adapter issues with dbt 1.8+ / dbt-fusion).
+2. **Password-based target `alloydb_dev`:**  
+   Set the password via env var (never commit it):
+   ```bash
+   export DBT_ALLOYDB_PASSWORD='yourpassword'
+   dbt run --target alloydb_dev
+   ```
+   Optional: put `DBT_ALLOYDB_PASSWORD=...` in a `.env` file and add `.env` to `.gitignore` (already ignored in this repo).
+3. **Source database/schema:** For AlloyDB, sources use `source_database` and `source_schema` from `dbt_project.yml` (defaults: `analytics`, `dbt_source`). Override with vars if your OLTP tables live elsewhere.
+4. **Run:** `dbt debug --target alloydb_dev` then `dbt run --target alloydb_dev` (or use IAM; see below).
 
 #### AlloyDB in dbt Cloud
 
