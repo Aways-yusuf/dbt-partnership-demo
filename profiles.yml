@@ -20,43 +20,24 @@ dbt_partnership_demo:
       threads: 8
       timeout_seconds: 600
     # --- AlloyDB (Postgres-compatible; use dbt-postgres adapter) ---
-    # Password-based (user/password in AlloyDB):
+    # Password-based: set env var before run, e.g. export DBT_ALLOYDB_PASSWORD='yourpassword'
     alloydb_dev:
       type: postgres
       host: "35.224.103.243"
       port: 5432
       user: "gp797"
-      password: "gp797"
+      password: "{{ env_var('DBT_ALLOYDB_PASSWORD') }}"
       dbname: "analytics"
       schema: dbt_target
       threads: 8
       connect_timeout: 10
-    alloydb_prod:
-      type: postgres
-      host: "35.224.103.243"
-      port: 5432
-      user: "postgres"
-      password: ""
-      dbname: "postgres"
-      schema: dbt_target
-      threads: 8
-      connect_timeout: 10
+
     # --- AlloyDB with IAM / OAuth (token as password) ---
     # 1. Create IAM DB user in AlloyDB (see Cloud docs: Manage IAM authentication).
     # 2. user = IAM email (e.g. you@company.com) or service account without .gserviceaccount.com.
     # 3. Before dbt: export PGPASSWORD=$(gcloud auth print-access-token)
     # 4. Run: dbt run --target alloydb_dev_iam
     alloydb_dev_iam:
-      type: postgres
-      host: "35.224.103.243"
-      port: 5432
-      user: "gaurav.poojary@66degrees.com"
-      password: "{{ env_var('PGPASSWORD', '') }}"
-      dbname: "analytics"
-      schema: dbt_target
-      threads: 8
-      connect_timeout: 10
-    alloydb_prod_iam:
       type: postgres
       host: "35.224.103.243"
       port: 5432

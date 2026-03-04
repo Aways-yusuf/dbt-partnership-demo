@@ -6,3 +6,7 @@ logs/
 .DS_Store
 dbt_internal_packages/
 .cursor
+
+# Local env vars (e.g. DBT_ALLOYDB_PASSWORD); never commit
+.env
+.env.local
