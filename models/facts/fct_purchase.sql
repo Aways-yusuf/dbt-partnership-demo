@@ -15,7 +15,7 @@ with stg_base as (select * from {{ ref('int_purchase') }}),
          row_number() over (partition by stg._row_id order by dsu.valid_from desc) as rn
        from stg
        left join dsu
-         on safe_cast(dsu.wwi_supplier_id as int64) = safe_cast(stg.wwi_supplier_id as int64)
+         on {{ cross_db_safe_cast_int('dsu.wwi_supplier_id') }} = {{ cross_db_safe_cast_int('stg.wwi_supplier_id') }}
          and stg.last_modified_when > dsu.valid_from
          and stg.last_modified_when <= dsu.valid_to
      ),
@@ -26,7 +26,7 @@ with stg_base as (select * from {{ ref('int_purchase') }}),
          row_number() over (partition by stg._row_id order by dsi.valid_from desc) as rn
        from stg
        left join dsi
-         on safe_cast(dsi.wwi_stock_item_id as int64) = safe_cast(stg.wwi_stock_item_id as int64)
+         on {{ cross_db_safe_cast_int('dsi.wwi_stock_item_id') }} = {{ cross_db_safe_cast_int('stg.wwi_stock_item_id') }}
          and stg.last_modified_when > dsi.valid_from
          and stg.last_modified_when <= dsi.valid_to
      )

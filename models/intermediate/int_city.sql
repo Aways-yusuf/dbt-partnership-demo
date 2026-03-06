@@ -7,8 +7,8 @@ with cities as (select * from {{ ref('stg_city') }}),
              stateprovincename as state_province,
              countryid as country_id,
              salesterritory as sales_territory,
-             safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as valid_from,
-             safe_cast(substr(cast(validto as string), 1, 26) as timestamp) as valid_to
+             {{ cross_db_cast_timestamp('validfrom') }} as valid_from,
+             {{ cross_db_cast_timestamp('validto') }} as valid_to
          from {{ source('wwi_oltp', 'StateProvinces') }}
      ),
      countries as (
@@ -18,8 +18,8 @@ with cities as (select * from {{ ref('stg_city') }}),
              continent,
              region,
              subregion,
-             safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as valid_from,
-             safe_cast(substr(cast(validto as string), 1, 26) as timestamp) as valid_to
+             {{ cross_db_cast_timestamp('validfrom') }} as valid_from,
+             {{ cross_db_cast_timestamp('validto') }} as valid_to
          from {{ source('wwi_oltp', 'Countries') }}
      ),
 city_sp as (
@@ -38,7 +38,7 @@ city_sp_co as (
 ),
 with_valid_to as (
     select wwi_city_id, city, state_province, country, continent, sales_territory, region, subregion, location, latest_recorded_population, valid_from,
-           coalesce(lead(valid_from) over (partition by wwi_city_id order by valid_from), timestamp('9999-12-31 23:59:59.999999')) as valid_to
+           coalesce(lead(valid_from) over (partition by wwi_city_id order by valid_from), {{ cross_db_timestamp_max() }}) as valid_to
     from city_sp_co
 )
 select * from with_valid_to

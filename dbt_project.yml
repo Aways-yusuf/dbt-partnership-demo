@@ -28,6 +28,9 @@ vars:
   wwi_dw_dataset: "{{ env_var('WWI_DW_DATASET', 'wide_world_importers_dw') }}"
   date_dim_start_year: 2013
   date_dim_end_year: "{{ var('date_dim_end_year', 2030) }}"
+  # AlloyDB/Postgres only: override if your source tables are not in database=postgres, schema=public
+  source_database: "analytics"
+  source_schema: "dbt_source"
 
 models:
   dbt_partnership_demo:

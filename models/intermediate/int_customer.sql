@@ -4,22 +4,22 @@
 {{ config(materialized='view') }}
 with customers as (select * from {{ ref('stg_customer') }}),
      categories as (
-         select safe_cast(customercategoryid as int64) as customer_category_id, customercategoryname as customer_category_name,
-                safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as valid_from, safe_cast(substr(cast(validto as string), 1, 26) as timestamp) as valid_to
+         select {{ cross_db_safe_cast_int('customercategoryid') }} as customer_category_id, customercategoryname as customer_category_name,
+                {{ cross_db_cast_timestamp('validfrom') }} as valid_from, {{ cross_db_cast_timestamp('validto') }} as valid_to
          from {{ source('wwi_oltp', 'CustomerCategories') }}
      ),
      buying_groups as (
-         select safe_cast(buyinggroupid as int64) as buying_group_id, buyinggroupname as buying_group_name,
-                safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as valid_from, safe_cast(substr(cast(validto as string), 1, 26) as timestamp) as valid_to
+         select {{ cross_db_safe_cast_int('buyinggroupid') }} as buying_group_id, buyinggroupname as buying_group_name,
+                {{ cross_db_cast_timestamp('validfrom') }} as valid_from, {{ cross_db_cast_timestamp('validto') }} as valid_to
          from {{ source('wwi_oltp', 'BuyingGroups') }}
      ),
      people as (
-         select safe_cast(personid as int64) as person_id, fullname as full_name
+         select {{ cross_db_safe_cast_int('personid') }} as person_id, fullname as full_name
          from {{ source('wwi_oltp', 'People') }}
      ),
      bill_to as (
-         select safe_cast(customerid as int64) as customer_id, customername as customer_name,
-                safe_cast(substr(cast(validfrom as string), 1, 26) as timestamp) as valid_from, safe_cast(substr(cast(validto as string), 1, 26) as timestamp) as valid_to
+         select {{ cross_db_safe_cast_int('customerid') }} as customer_id, customername as customer_name,
+                {{ cross_db_cast_timestamp('validfrom') }} as valid_from, {{ cross_db_cast_timestamp('validto') }} as valid_to
          from {{ source('wwi_oltp', 'Customers') }}
      ),
 customer_enriched as (
@@ -52,7 +52,7 @@ with_valid_to as (
         primary_contact,
         postal_code,
         valid_from,
-        coalesce(lead(valid_from) over (partition by wwi_customer_id order by valid_from), timestamp('9999-12-31 23:59:59.999999')) as valid_to
+        coalesce(lead(valid_from) over (partition by wwi_customer_id order by valid_from), {{ cross_db_timestamp_max() }}) as valid_to
     from customer_enriched
 )
 select * from with_valid_to

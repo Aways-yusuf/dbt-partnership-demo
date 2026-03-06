@@ -14,9 +14,9 @@ with stg_base as (select * from {{ ref('int_stock_holding') }}),
          row_number() over (partition by stg._row_id order by dsi.valid_from desc) as rn
        from stg
        left join dsi
-         on safe_cast(dsi.wwi_stock_item_id as int64) = safe_cast(stg.wwi_stock_item_id as int64)
-         and current_timestamp() > dsi.valid_from
-         and current_timestamp() <= dsi.valid_to
+         on {{ cross_db_safe_cast_int('dsi.wwi_stock_item_id') }} = {{ cross_db_safe_cast_int('stg.wwi_stock_item_id') }}
+         and {{ cross_db_current_timestamp() }} > dsi.valid_from
+         and {{ cross_db_current_timestamp() }} <= dsi.valid_to
      )
 
 select
