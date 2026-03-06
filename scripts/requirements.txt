@@ -1,4 +1,0 @@
-functions-framework
-requests
-google-cloud-storage
-google-cloud-aiplatform
