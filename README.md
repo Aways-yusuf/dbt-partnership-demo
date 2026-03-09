@@ -99,6 +99,16 @@ In dbt Cloud, the profile and targets come from the **Connection** and **Environ
 
 So in dbt Cloud you don’t use `--target alloydb_dev`. You run `dbt run` in a job (or IDE) that uses the AlloyDB environment; that environment’s connection is the target.
 
+**Recommended setup: two environments and two jobs**
+
+- **Environments:** Create one environment for BigQuery and one for AlloyDB. Connection method for each:
+  - **BigQuery environment** — use the **service account** method: in dbt Cloud, add a BigQuery connection and authenticate with a Google Cloud service account (e.g. key file or OAuth). The connection uses that service account to run jobs against your BigQuery project/dataset.
+  - **AlloyDB environment** — use **username and password** for a database user: add a PostgreSQL (AlloyDB) connection and set the **host**, **port**, **database** name, and **user** / **password** for an AlloyDB user. dbt Cloud uses these details to connect to AlloyDB when the AlloyDB job runs.
+- **Jobs:** Create two predefined jobs:
+  - **BigQuery job** — set **Environment** to the BigQuery environment. This job runs `dbt run` against BigQuery.
+  - **AlloyDB job** — set **Environment** to the AlloyDB environment. This job runs `dbt run` against AlloyDB.
+- Each job uses the connection from its environment, so no `--target` is needed in the job commands. The [scripts/dbt-run](scripts/dbt-run) API can trigger either job: send `{"job": "bigquery"}` to run the BigQuery job, or `{"job": "alloydb"}` to run the AlloyDB job (see [scripts/dbt-run/README.md](scripts/dbt-run/README.md)).
+
 **If you see:** `panic: not yet implemented: PostgreSQL's list_relations_schemas` — the Rust adapter in dbt 1.8+ doesn't implement this for Postgres. **Fix:** pin both `dbt-core` and `dbt-postgres` to &lt; 1.8 (see `requirements.txt`), then reinstall so nothing is 1.8+:
 
   ```bash
@@ -207,6 +217,17 @@ SSIS package variables (LastETLCutoffTime, TargetETLCutoffTime, LineageKey, Tabl
   - `models/intermediate/_intermediate_models.yml` — intermediate models
 - **Source definitions** (tables, descriptions): `models/sources.yml`
 - **Reference docs** (dbt-fusion): `dbt man` (writes catalog/artifacts with `--write-json` / `--write-catalog`)
+- **dbt Remote MCP / ADK:** [docs/dbt_remote_mcp_curl.md](docs/dbt_remote_mcp_curl.md), [docs/dbt_remote_mcp_adk.md](docs/dbt_remote_mcp_adk.md)
+
+## Scripts
+
+Helper scripts in `scripts/` (each has its own README):
+
+| Script | Description |
+|--------|--------------|
+| **[scripts/dbt-run/](scripts/dbt-run/)** | Trigger a dbt Cloud job (e.g. dbt run) from an HTTP API. Call from Figma, curl, or any client; optional wait for completion and run-result summary. |
+| **[scripts/ssis-dbt/](scripts/ssis-dbt/)** | Convert SSIS packages to a dbt project using Vertex AI (Gemini). Reads package + SQL from GCS, generates staging/intermediate/dimensions/facts, uploads back to GCS. Supports BigQuery and AlloyDB. |
+| **[scripts/adk-mcp/](scripts/adk-mcp/)** | ADK (Agent Development Kit) + dbt Remote MCP — see [dbt_mcp_remote.md](scripts/adk-mcp/dbt_mcp_remote.md). |
 
 ## Source reference
 
