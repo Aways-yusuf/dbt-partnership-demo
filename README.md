@@ -47,6 +47,45 @@ dbt project that replicates the **Wide World Importers** data warehouse pipeline
 3. Align `models/sources.yml` with your BigQuery project/dataset for OLTP sources.
 4. Run: `dbt debug` then `dbt run` (uses target `dev` = BigQuery).
 
+#### BigQuery in dbt Cloud
+
+In dbt Cloud, the BigQuery connection is configured in the UI (not in the repo’s `profiles.yml`). Use the **service account** method so that dbt Cloud jobs run with a dedicated Google Cloud service account.
+
+**Set up the BigQuery connection (service account)**
+
+1. **Create a service account in Google Cloud** (if you don’t have one):
+   - In Google Cloud Console: **IAM & Admin** → **Service Accounts** → **Create service account**.
+   - Give it a name (e.g. `dbt-cloud-bigquery`), create it, then open it and go to **Keys**.
+   - **Add key** → **Create new key** → **JSON**. Download the key file (keep it secure; do not commit it).
+
+2. **Grant the service account access to BigQuery:**
+   - In Google Cloud: **IAM & Admin** → **IAM** → find the service account (or add it as a principal).
+   - Assign roles such as **BigQuery Data Editor** and **BigQuery Job User** (and **BigQuery Admin** if it must create datasets). For minimal access, use **BigQuery Data Editor** + **BigQuery Job User**.
+   - Ensure it can read your source dataset(s) and write to your warehouse dataset(s).
+
+3. **Add the BigQuery connection in dbt Cloud:**
+   - In dbt Cloud: **Project** → **Settings** (gear) → **Connections** (or **Profile**).
+   - Click **Add connection** (or **New connection**).
+   - Choose **BigQuery**.
+   - Under **Authentication**, select **Service Account** (or **Service Account Key**).
+   - **Upload the service account key file** (the JSON you downloaded) or paste its contents. dbt Cloud stores it securely and uses it to authenticate to BigQuery when running jobs.
+   - Set **Project**, **Dataset** (default dataset for the project), and any other options (e.g. location).
+   - Name the connection (e.g. “BigQuery”) and save.
+
+4. **Create an environment that uses that connection:**
+   - **Deploy** → **Environments** → **Create environment**.
+   - **Name:** e.g. “BigQuery Dev”.
+   - **Connection:** select the BigQuery connection you created.
+   - **dbt version:** choose a version. Save.
+
+5. **Run dbt against BigQuery:**
+   - **Deploy** → **Jobs** → **Create job** (or edit an existing job).
+   - Set **Environment** to the BigQuery environment (e.g. “BigQuery Dev”).
+   - **Commands:** e.g. `dbt run` (no `--target` needed; the environment’s connection is the target).
+   - Run the job.
+
+Jobs that use this environment will execute in dbt Cloud using the uploaded service account to connect to BigQuery.
+
 ### AlloyDB (Postgres)
 
 The same project runs against AlloyDB. Connection details are in `profiles.yml`; **passwords are not stored there**—use environment variables.
